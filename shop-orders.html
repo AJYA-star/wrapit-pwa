@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Orders - WrapIt</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #222;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: #555;
+        }
+
+        button,
+        select,
+        .login-link {
+            font: inherit;
+            border-radius: 6px;
+        }
+
+        button,
+        .login-link {
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled,
+        select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .refresh-button {
+            background: #333;
+            color: white;
+        }
+
+        .message {
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .message.info {
+            background: #e8f1ff;
+            color: #174578;
+        }
+
+        .message.success {
+            background: #e4f5e9;
+            color: #185c2e;
+        }
+
+        .message.error {
+            background: #fde8e8;
+            color: #8c2020;
+        }
+
+        .login-link {
+            display: inline-block;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .order-card,
+        .empty-state {
+            background: white;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .order-card h2 {
+            margin-top: 0;
+            font-size: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        .order-card p {
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .status-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .status-select {
+            padding: 9px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+
+        .btn-update {
+            background: #238c42;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .status-controls {
+                align-items: stretch;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header class="page-header">
+            <div>
+                <h1>Manage Shop Orders</h1>
+                <p class="subtitle">
+                    View customer orders and update their status.
+                </p>
+            </div>
+
+            <button
+                id="refresh-button"
+                class="refresh-button"
+                type="button"
+            >
+                Refresh orders
+            </button>
+        </header>
+
+        <div
+            id="message"
+            class="message info"
+            role="status"
+            aria-live="polite"
+            hidden
+        ></div>
+
+        <a id="login-link" class="login-link" href="login.html" hidden>
+            Go to login
+        </a>
+
+        <div id="orders-container" aria-busy="false">
+            Loading orders...
+        </div>
+    </main>
+
+    <script>
+        'use strict';
+
+        const API_URL = 'https://wrapit-backend-salar.onrender.com/api';
+
+        // Must match backend Order schema exactly
+        const ORDER_STATUSES = [
+            'Pending',
+            'Confirmed',
+            'In Progress',
+            'Completed',
+            'Cancelled'
+        ];
+
+        const container = document.getElementById('orders-container');
+        const messageBox = document.getElementById('message');
+        const loginLink = document.getElementById('login-link');
+        const refreshButton = document.getElementById('refresh-button');
+
+        let busy = false;
+
+        function showMessage(text, type = 'info') {
+            messageBox.textContent = text;
+            messageBox.className = 'message ' + type;
+            messageBox.hidden = false;
+        }
+
+        function clearMessage() {
+            messageBox.textContent = '';
+            messageBox.hidden = true;
+            loginLink.hidden = true;
+        }
+
+        function setBusy(value) {
+            busy = value;
+            refreshButton.disabled = value;
+            container.setAttribute('aria-busy', String(value));
+
+            container.querySelectorAll('button, select').forEach(element => {
+                element.disabled = value;
+            });
+        }
+
+        function authenticationError(message) {
+            const error = new Error(message);
+            error.status = 401;
+            return error;
+        }
+
+        function getToken() {
+            let token;
+            try {
+                token = localStorage.getItem('token');
+            } catch {
+                throw new Error('Browser storage is unavailable. Allow site storage and log in again.');
+            }
+
+            if (!token || !token.trim() || token === 'null' || token === 'undefined') {
+                throw authenticationError('You are not logged in. Please log in as a shop owner.');
+            }
+
+            return token.trim();
+        }
+
+        async function apiRequest(path, options = {}) {
+            const token = getToken();
+            const controller = new AbortController();
+
+            // 60-second timeout to handle Render cold-starts
+            const timeout = setTimeout(() => controller.abort(), 60000);
+
+            try {
+                const headers = {
+                    Accept: 'application/json',
+                    Authorization: 'Bearer ' + token
+                };
+
+                if (options.body !== undefined) {
+                    headers['Content-Type'] = 'application/json';
+                }
+
+                const response = await fetch(API_URL + path, {
+                    ...options,
+                    headers,
+                    signal: controller.signal
+                });
+
+                const text = await response.text();
+                let data = null;
+                let validJson = true;
+
+                if (text.trim()) {
+                    try {
+                        data = JSON.parse(text);
+                    } catch {
+                        validJson = false;
+                    }
+                }
+
+                const serverMessage =
+                    data && typeof data.message === 'string'
+                        ? data.message
+                        : data && typeof data.error === 'string'
+                            ? data.error
+                            : '';
+
+                if (!response.ok) {
+                    let explanation;
+                    switch (response.status) {
+                        case 401:
+                            explanation = 'Your session is missing, expired, or invalid. Please log in again.';
+                            break;
+                        case 403:
+                            explanation = 'Access denied. Your account may not have the required owner role or shop access.';
+                            break;
+                        case 404:
+                            explanation = 'The requested API route or order was not found. Check the backend order routes.';
+                            break;
+                        case 405:
+                            explanation = 'The backend does not allow this HTTP method. Check whether the status route uses PUT or PATCH.';
+                            break;
+                        default:
+                            explanation = response.status >= 500
+                                ? 'The backend returned a server error. Check Render runtime logs.'
+                                : 'The backend rejected the request.';
+                    }
+
+                    const error = new Error(
+                        explanation +
+                        (serverMessage ? '\nServer: ' + serverMessage : '') +
+                        '\nHTTP ' + response.status + ' — ' + (options.method || 'GET') + ' ' + API_URL + path
+                    );
+                    error.status = response.status;
+                    throw error;
+                }
+
+                if (!validJson) {
+                    throw new Error('The API returned a non-JSON response. Check request URL and Render logs.');
+                }
+
+                if (data && data.success === false) {
+                    throw new Error(serverMessage || 'The backend reported an unsuccessful request.');
+                }
+
+                return data;
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error('The request timed out after 60 seconds. Render may still be spinning up. Try refreshing.');
+                }
+                if (error instanceof TypeError) {
+                    throw new Error('Could not connect to the API. Verify backend status and CORS settings.');
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
+
+        function handleError(error) {
+            console.error('Shop orders error:', error);
+            showMessage(error.message || 'An unexpected error occurred.', 'error');
+            loginLink.hidden = error.status !== 401 && error.status !== 403;
+        }
+
+        function extractOrders(data) {
+            if (Array.isArray(data)) return data;
+            if (data && Array.isArray(data.orders)) return data.orders;
+            if (data && Array.isArray(data.data)) return data.data;
+            if (data && data.data && Array.isArray(data.data.orders)) return data.data.orders;
+
+            throw new Error('Response did not contain an orders array. Verify getShopOrders response structure.');
+        }
+
+        function displayValue(value, fallback = 'N/A') {
+            if (value === null || value === undefined || value === '' || typeof value === 'object') {
+                return fallback;
+            }
+            return String(value);
+        }
+
+        function addDetail(card, label, value) {
+            const paragraph = document.createElement('p');
+            const strong = document.createElement('strong');
+            strong.textContent = label + ': ';
+            paragraph.append(strong, document.createTextNode(displayValue(value)));
+            card.appendChild(paragraph);
+            return paragraph;
+        }
+
+        function formatPrice(value) {
+            if (value === null || value === undefined || value === '' || !['number', 'string'].includes(typeof value)) {
+                return 'N/A';
+            }
+            const amount = Number(value);
+            return Number.isFinite(amount) ? '$' + amount.toFixed(2) : 'N/A';
+        }
+
+        function renderOrders(orders) {
+            const fragment = document.createDocumentFragment();
+
+            if (orders.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No orders found for your shop yet.';
+                fragment.appendChild(empty);
+            }
+
+            orders.forEach((order, index) => {
+                if (!order || typeof order !== 'object' || !order._id) {
+                    throw new Error('An order in the response is missing an _id.');
+                }
+
+                const card = document.createElement('article');
+                card.className = 'order-card';
+
+                const heading = document.createElement('h2');
+                heading.textContent = 'Order ID: ' + order._id;
+                card.appendChild(heading);
+
+                const customer = order.customer && typeof order.customer === 'object' ? order.customer : {};
+
+                addDetail(card, 'Customer', displayValue(customer.name, 'Unknown Customer'));
+                addDetail(card, 'Phone', customer.phone);
+                addDetail(card, 'Total Price', formatPrice(order.totalPrice));
+
+                const statusRow = addDetail(card, 'Current Status', displayValue(order.status, 'Unknown'));
+
+                if (order.createdAt) {
+                    const date = new Date(order.createdAt);
+                    if (!Number.isNaN(date.getTime())) {
+                        addDetail(card, 'Placed on', date.toLocaleString());
+                    }
+                }
+
+                const controls = document.createElement('div');
+                controls.className = 'status-controls';
+
+                const label = document.createElement('label');
+                label.textContent = 'Update status:';
+                label.htmlFor = 'order-status-' + index;
+
+                const select = document.createElement('select');
+                select.id = label.htmlFor;
+                select.className = 'status-select';
+
+                const currentStatus = displayValue(order.status, '');
+
+                if (!ORDER_STATUSES.includes(currentStatus)) {
+                    const option = document.createElement('option');
+                    option.value = currentStatus;
+                    option.textContent = currentStatus || 'Choose a status';
+                    option.disabled = true;
+                    option.selected = true;
+                    select.appendChild(option);
+                }
+
+                ORDER_STATUSES.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status;
+                    option.textContent = status;
+                    option.selected = status === currentStatus;
+                    select.appendChild(option);
+                });
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn-update';
+                button.textContent = 'Update';
+
+                button.addEventListener('click', () => {
+                    updateStatus(order, select, button, statusRow);
+                });
+
+                controls.append(label, select, button);
+                card.appendChild(controls);
+                fragment.appendChild(card);
+            });
+
+            container.replaceChildren(fragment);
+        }
+
+        async function fetchShopOrders() {
+            if (busy) return;
+
+            clearMessage();
+            setBusy(true);
+            container.textContent = 'Loading orders...';
+
+            try {
+                const data = await apiRequest('/orders/shop-orders');
+                const orders = extractOrders(data);
+                renderOrders(orders);
+                showMessage(orders.length + ' order' + (orders.length === 1 ? '' : 's') + ' loaded.', 'success');
+            } catch (error) {
+                container.textContent = 'Orders could not be loaded.';
+                handleError(error);
+            } finally {
+                setBusy(false);
+            }
+        }
+
+        async function updateStatus(order, select, button, statusRow) {
+            if (busy) return;
+
+            const newStatus = select.value;
+            clearMessage();
+
+            if (!ORDER_STATUSES.includes(newStatus)) {
+                showMessage('Please choose a valid status.', 'error');
+                return;
+            }
+
+            if (newStatus === order.status) {
+                showMessage('This order already has that status.', 'info');
+                return;
+            }
+
+            if (newStatus === 'Cancelled' && !window.confirm('Cancel this order?')) {
+                return;
+            }
+
+            setBusy(true);
+            button.textContent = 'Updating...';
+
+            try {
+                await apiRequest('/orders/' + encodeURIComponent(order._id) + '/status', {
+                    method: 'PUT',
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                order.status = newStatus;
+
+                const strong = document.createElement('strong');
+                strong.textContent = 'Current Status: ';
+                statusRow.replaceChildren(strong, document.createTextNode(newStatus));
+
+                showMessage('Order status updated successfully.', 'success');
+            } catch (error) {
+                handleError(error);
+            } finally {
+                button.textContent = 'Update';
+                setBusy(false);
+            }
+        }
+
+        refreshButton.addEventListener('click', fetchShopOrders);
+        fetchShopOrders();
+    </script>
+</body>
+</html>
