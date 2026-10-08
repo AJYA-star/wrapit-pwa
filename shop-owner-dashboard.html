@@ -3,111 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
     <title>Shop Dashboard - WrapIt</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        [hidden] { display: none !important; }
         body { font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
-        .header { background: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .header h1 { color: #f5576c; font-size: 1.8em; }
-        .logout-btn { background: #f5576c; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-box { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .stat-val { font-size: 2em; font-weight: 700; color: #f5576c; }
-        .stat-label { color: #888; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; }
+        .header { background: white; padding: 22px 25px; border-radius: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header h1 { color: #f5576c; font-size: 1.6em; }
+        .header .sub { color: #888; font-size: 0.85em; margin-top: 2px; }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { background: #f5576c; color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600; font-size: 0.9em; text-decoration: none; display: inline-block; }
+        .btn.light { background: #fff0f2; color: #f5576c; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .order-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 6px solid #f5576c; }
-        .order-info h3 { color: #333; margin-bottom: 5px; }
-        .order-info p { color: #666; font-size: 0.9em; }
-        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; background: #fff3cd; color: #856404; }
-        .complete-btn { background: #27ae60; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .complete-btn:hover { background: #219150; }
+        .notice { padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-weight: 600; font-size: 0.9em; }
+        .notice.warn { background: #fff3cd; color: #856404; }
+        .notice.error { background: #f8d7da; color: #721c24; }
+        .notice.ok { background: #d4edda; color: #155724; }
+
+        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .card h2 { color: #f5576c; font-size: 1.15em; margin-bottom: 12px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 18px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .stat-val { font-size: 1.9em; font-weight: 700; color: #f5576c; }
+        .stat-label { color: #888; font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; }
+
+        form.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+        form.grid .full { grid-column: 1 / -1; }
+        label { font-size: 0.8em; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+        input, textarea { width: 100%; padding: 10px; border: 1.5px solid #eadfe3; border-radius: 10px; font: inherit; }
+        input:focus, textarea:focus { outline: none; border-color: #f5576c; }
+        textarea { min-height: 70px; resize: vertical; }
+        @media (max-width: 560px) { form.grid { grid-template-columns: 1fr; } }
+
+        .service-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f3eef0; }
+        .service-row:last-child { border-bottom: 0; }
+        .service-row .name { font-weight: 600; }
+        .service-row .desc { font-size: 0.8em; color: #888; }
+        .price { color: #f5576c; font-weight: 700; white-space: nowrap; }
+        .link-danger { background: none; border: 0; color: #c0392b; cursor: pointer; font: inherit; font-size: 0.85em; }
+
+        .order-card { background: white; border-radius: 15px; padding: 18px; margin-bottom: 14px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 6px solid #f5576c; }
+        .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .order-info h3 { color: #333; margin-bottom: 4px; }
+        .order-info p { color: #666; font-size: 0.88em; margin: 2px 0; overflow-wrap: anywhere; }
+        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 0.75em; font-weight: 700; background: #e9ecef; color: #495057; text-transform: uppercase; white-space: nowrap; }
+        .st-pending { background: #fff3cd; color: #856404; }
+        .st-accepted, .st-in_progress { background: #d1ecf1; color: #0c5460; }
+        .st-ready, .st-out_for_delivery { background: #e2d9f3; color: #4a2c86; }
+        .st-completed { background: #d4edda; color: #155724; }
+        .st-cancelled, .st-rejected { background: #f8d7da; color: #721c24; }
+        .order-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .act { border: 0; border-radius: 8px; padding: 9px 14px; cursor: pointer; font: inherit; font-weight: 600; font-size: 0.85em; background: #27ae60; color: white; }
+        .act.neg { background: white; color: #c0392b; border: 1.5px solid #c0392b; }
+        .act:disabled { opacity: 0.5; cursor: not-allowed; }
+        .empty { text-align: center; padding: 24px; color: #888; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏪 Shop Dashboard</h1>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>
+                <h1>🏪 Shop Dashboard</h1>
+                <div class="sub" id="shopSubtitle"></div>
+            </div>
+            <div class="header-actions">
+                <a class="btn light" href="index.html">Home</a>
+                <button class="btn" type="button" id="logoutBtn">Logout</button>
+            </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-box"><div class="stat-val" id="totalCount">0</div><div class="stat-label">Total Orders</div></div>
-            <div class="stat-box"><div class="stat-val" id="pendingCount">0</div><div class="stat-label">Pending</div></div>
-            <div class="stat-box"><div class="stat-val" id="totalRev">0</div><div class="stat-label">Revenue (AED)</div></div>
-        </div>
+        <div id="message" class="notice error" hidden></div>
 
-        <h2 style="margin-bottom: 15px; color: #f5576c;">Active Orders</h2>
-        <div id="ordersList">
-            <!-- Orders will load here -->
+        <!-- Step 1: shop does not exist yet -->
+        <section class="card" id="setupCard" hidden>
+            <h2>Set up your shop</h2>
+            <p style="color:#666; font-size:0.9em; margin-bottom:14px;">Tell customers about your gift wrapping business. You can add your services right after.</p>
+            <form class="grid" id="setupForm">
+                <div class="full"><label for="sName">Shop name</label><input id="sName" required maxlength="80"></div>
+                <div class="full"><label for="sDesc">Description</label><textarea id="sDesc" required maxlength="500"></textarea></div>
+                <div><label for="sPhone">Shop phone</label><input id="sPhone" type="tel" required></div>
+                <div><label for="sEmail">Shop email</label><input id="sEmail" type="email" required></div>
+                <div><label for="sStreet">Street / area</label><input id="sStreet" required></div>
+                <div><label for="sCity">City</label><input id="sCity" required></div>
+                <div class="full"><button class="btn" type="submit" id="setupBtn">Create shop</button></div>
+            </form>
+        </section>
+
+        <!-- Step 2: dashboard -->
+        <div id="dashboard" hidden>
+            <div class="notice warn" id="verifyNotice" hidden>Your shop is waiting for approval and is not visible to customers yet.</div>
+
+            <div class="stats-grid">
+                <div class="stat-box"><div class="stat-val" id="totalCount">0</div><div class="stat-label">Total Orders</div></div>
+                <div class="stat-box"><div class="stat-val" id="pendingCount">0</div><div class="stat-label">New (Pending)</div></div>
+                <div class="stat-box"><div class="stat-val" id="totalRev">0</div><div class="stat-label">Revenue (AED)</div></div>
+            </div>
+
+            <section class="card">
+                <h2>Your services</h2>
+                <div id="servicesList"></div>
+                <form class="grid" id="serviceForm" style="margin-top:14px;">
+                    <div><label for="svName">Service name</label><input id="svName" required maxlength="80" placeholder="e.g. Premium wrapping"></div>
+                    <div><label for="svPrice">Price (AED)</label><input id="svPrice" type="number" min="0" step="0.5" required></div>
+                    <div class="full"><label for="svDesc">Description (optional)</label><input id="svDesc" maxlength="200"></div>
+                    <div class="full"><button class="btn" type="submit">Add service</button></div>
+                </form>
+            </section>
+
+            <h2 style="margin: 0 0 12px; color:#f5576c;">Orders</h2>
+            <div id="ordersList"></div>
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
-        const API_URL = 'https://wrapit-backend-salar.onrender.com/api';
-        const token = localStorage.getItem('token');
+        const $ = id => document.getElementById(id);
+        let shop = null;
 
-        async function loadDashboard() {
-            if (!token) { window.location.href = 'login.html'; return; }
+        const ACTION_LABELS = {
+            accepted: 'Accept', rejected: 'Reject', in_progress: 'Start wrapping', ready: 'Mark ready',
+            out_for_delivery: 'Out for delivery', completed: 'Complete', cancelled: 'Cancel order'
+        };
+        const NEGATIVE = ['rejected', 'cancelled'];
+
+        function showMessage(text, type = 'error') {
+            const box = $('message');
+            box.textContent = text;
+            box.className = 'notice ' + type;
+            box.hidden = !text;
+        }
+
+        function handleError(err) {
+            console.error(err);
+            if (err.status === 401) {
+                window.location.href = 'login.html?next=shop-owner-dashboard.html';
+                return;
+            }
+            showMessage(err.message);
+        }
+
+        async function init() {
+            if (!getToken()) { window.location.href = 'login.html?next=shop-owner-dashboard.html'; return; }
+            const user = getUser();
+            if (user && user.role === 'customer') {
+                showMessage('This page is for shop owner accounts. Please register or log in with a shop owner account.');
+                return;
+            }
+            await loadShop();
+        }
+
+        async function loadShop() {
             try {
-                const res = await fetch(`${API_URL}/orders/shop-orders`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (data.success) {
-                    renderOrders(data.orders);
+                const data = await api('/shops/mine');
+                shop = data.shop;
+                $('setupCard').hidden = true;
+                $('dashboard').hidden = false;
+                $('shopSubtitle').textContent = shop.name;
+                $('verifyNotice').hidden = shop.isVerified !== false;
+                renderServices();
+                await loadOrders();
+            } catch (err) {
+                if (err.status === 404) {
+                    // no shop yet -> show the setup form
+                    $('dashboard').hidden = true;
+                    $('setupCard').hidden = false;
+                    return;
                 }
-            } catch (err) { console.error("Error:", err); }
+                handleError(err);
+            }
+        }
+
+        $('setupForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            const btn = $('setupBtn');
+            btn.disabled = true;
+            showMessage('');
+            try {
+                await api('/shops', {
+                    method: 'POST',
+                    body: {
+                        name: $('sName').value.trim(),
+                        description: $('sDesc').value.trim(),
+                        phone: $('sPhone').value.trim(),
+                        email: $('sEmail').value.trim(),
+                        address: { street: $('sStreet').value.trim(), city: $('sCity').value.trim() }
+                    }
+                });
+                await loadShop();
+            } catch (err) { handleError(err); }
+            btn.disabled = false;
+        });
+
+        function renderServices() {
+            const services = shop.services || [];
+            $('servicesList').innerHTML = services.length
+                ? services.map(s => `
+                    <div class="service-row">
+                        <div><div class="name">${esc(s.name)}</div><div class="desc">${esc(s.description || '')}</div></div>
+                        <div><span class="price">AED ${esc(s.price)}</span>
+                        <button type="button" class="link-danger" data-id="${esc(s._id)}">Remove</button></div>
+                    </div>`).join('')
+                : '<div class="empty">No services yet. Add your first one below so customers can book you.</div>';
+
+            document.querySelectorAll('#servicesList .link-danger').forEach(btn =>
+                btn.addEventListener('click', () => removeService(btn.dataset.id)));
+        }
+
+        $('serviceForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            showMessage('');
+            try {
+                const data = await api('/shops/' + encodeURIComponent(shop._id) + '/services', {
+                    method: 'POST',
+                    body: {
+                        name: $('svName').value.trim(),
+                        price: Number($('svPrice').value),
+                        description: $('svDesc').value.trim()
+                    }
+                });
+                shop = data.shop;
+                $('serviceForm').reset();
+                renderServices();
+            } catch (err) { handleError(err); }
+        });
+
+        async function removeService(id) {
+            if (!confirm('Remove this service?')) return;
+            try {
+                const data = await api('/shops/' + encodeURIComponent(shop._id) + '/services/' + encodeURIComponent(id), { method: 'DELETE' });
+                shop = data.shop;
+                renderServices();
+            } catch (err) { handleError(err); }
+        }
+
+        async function loadOrders() {
+            try {
+                const data = await api('/orders/shop-orders');
+                renderOrders(data.orders || []);
+            } catch (err) { handleError(err); }
         }
 
         function renderOrders(orders) {
-            const list = document.getElementById('ordersList');
-            let pending = 0; let revenue = 0;
-            
-            if (orders.length === 0) {
-                list.innerHTML = "<p style='text-align:center; padding:20px;'>No orders yet!</p>";
+            let pending = 0, revenue = 0;
+            orders.forEach(o => {
+                if (o.status === 'pending') pending++;
+                if (o.status === 'completed') revenue += Number(o.pricing && o.pricing.total) || 0;
+            });
+            $('totalCount').textContent = orders.length;
+            $('pendingCount').textContent = pending;
+            $('totalRev').textContent = revenue;
+
+            if (!orders.length) {
+                $('ordersList').innerHTML = '<div class="card empty">No orders yet!</div>';
                 return;
             }
 
-            list.innerHTML = orders.map(order => {
-                if (order.status === 'pending') pending++;
-                revenue += order.pricing.total;
+            $('ordersList').innerHTML = orders.map(order => {
+                const customer = order.customer && typeof order.customer === 'object' ? order.customer : {};
+                const pickup = order.pickupDetails || {};
+                const delivery = order.deliveryDetails || {};
+                const next = ORDER_NEXT_STEPS[order.status] || [];
+                const number = String(order.orderNumber || order._id);
+
                 return `
-                    <div class="order-card">
+                <div class="order-card">
+                    <div class="order-top">
                         <div class="order-info">
-                            <h3>#${order.orderNumber.slice(-6)}</h3>
-                            <p><strong>Service:</strong> ${order.service.name}</p>
-                            <p><strong>Customer ID:</strong> ${order.customer.name || order.customer}</p>
+                            <h3>#${esc(number.slice(-8))}</h3>
+                            <p><strong>Service:</strong> ${esc(order.service && order.service.name)} — AED ${esc(order.pricing && order.pricing.total)}</p>
+                            <p><strong>Customer:</strong> ${esc(customer.name || 'Unknown')} ${customer.phone ? '· ' + esc(customer.phone) : ''}</p>
+                            <p><strong>Gift to shop:</strong> ${pickup.type === 'shop_pickup' ? 'Pick up from ' + esc(pickup.address) : 'Customer drops off'}</p>
+                            <p><strong>Return:</strong> ${delivery.type === 'shop_delivery' ? 'Deliver to ' + esc(delivery.address) : 'Customer collects'}</p>
+                            ${order.specialInstructions ? `<p><strong>Notes:</strong> ${esc(order.specialInstructions)}</p>` : ''}
+                            <p><strong>Payment:</strong> ${esc(order.payment && order.payment.method)} (${esc(order.payment && order.payment.status)})</p>
                         </div>
-                        <div style="text-align:right">
-                            <div style="margin-bottom:10px"><span class="order-status">${order.status}</span></div>
-                            ${order.status === 'pending' ? `<button class="complete-btn" onclick="markComplete('${order._id}')">Done</button>` : ''}
-                        </div>
+                        <span class="order-status st-${esc(order.status)}">${esc(ORDER_STATUS_LABELS[order.status] || order.status)}</span>
                     </div>
-                `;
+                    ${next.length ? `<div class="order-actions">${next.map(s =>
+                        `<button type="button" class="act ${NEGATIVE.includes(s) ? 'neg' : ''}" data-id="${esc(order._id)}" data-status="${esc(s)}">${esc(ACTION_LABELS[s] || s)}</button>`
+                    ).join('')}</div>` : ''}
+                </div>`;
             }).join('');
 
-            document.getElementById('totalCount').innerText = orders.length;
-            document.getElementById('pendingCount').innerText = pending;
-            document.getElementById('totalRev').innerText = revenue;
+            document.querySelectorAll('.act').forEach(btn =>
+                btn.addEventListener('click', () => changeStatus(btn)));
         }
 
-        async function markComplete(orderId) {
+        async function changeStatus(button) {
+            const status = button.dataset.status;
+            if (NEGATIVE.includes(status) && !confirm('Are you sure? This cannot be undone.')) return;
+            document.querySelectorAll('.act').forEach(b => b.disabled = true);
+            showMessage('');
             try {
-                await fetch(`${API_URL}/orders/${orderId}/status`, {
+                await api('/orders/' + encodeURIComponent(button.dataset.id) + '/status', {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ status: 'completed' })
+                    body: { status }
                 });
-                loadDashboard(); // Refresh
-            } catch (err) { alert("Failed to update"); }
+                await loadOrders();
+            } catch (err) {
+                handleError(err);
+                document.querySelectorAll('.act').forEach(b => b.disabled = false);
+            }
         }
 
-        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
-
-        loadDashboard();
+        $('logoutBtn').addEventListener('click', logout);
+        init();
     </script>
 </body>
 </html>

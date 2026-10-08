@@ -3,26 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
     <title>Shop Details - WrapIt</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; bbackground: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
-        .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px 20px; text-align: center; }
+        [hidden] { display: none !important; }
+        body { font-family: 'Montserrat', 'Segoe UI', sans-serif; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; min-height: 100vh; padding-bottom: 30px; }
+        .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px 20px 50px; text-align: center; }
         .container { max-width: 600px; margin: -30px auto 20px; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
-        .back-link { color: white; text-decoration: none; font-weight: bold; display: block; margin-bottom: 10px; }
-        .shop-name { font-size: 2em; margin-bottom: 10px; color: #333; }
+        .back-link { color: white; text-decoration: none; font-weight: bold; display: block; margin-bottom: 10px; text-align: left; }
         .description { color: #666; margin-bottom: 20px; line-height: 1.6; }
         .section-title { font-size: 1.2em; font-weight: bold; margin: 20px 0 10px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; }
-        .service-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .service-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: 0.3s; }
         .service-card:hover { border-color: #667eea; background: #fcfcff; }
+        .service-name { font-weight: bold; }
+        .service-desc { font-size: 0.8em; color: #888; margin-top: 3px; }
         .price { font-weight: bold; color: #f5576c; font-size: 1.2em; }
-        .book-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .book-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 6px; }
         .book-btn:hover { background: #764ba2; }
         .contact-info { font-size: 0.9em; color: #888; margin-top: 20px; }
-    </style>
+        .error { color: #c0392b; text-align: center; padding: 30px 10px; }
 
+        /* booking dialog */
+        .overlay { position: fixed; inset: 0; background: rgba(33, 22, 62, 0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 10; }
+        .sheet { background: white; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 22px 20px 26px; }
+        @media (min-width: 640px) { .overlay { align-items: center; } .sheet { border-radius: 20px; } }
+        .sheet h2 { color: #f5576c; margin-bottom: 4px; }
+        .sheet .summary { color: #666; margin-bottom: 14px; font-size: 0.95em; }
+        .sheet label { display: block; font-weight: 600; font-size: 0.85em; margin: 12px 0 5px; }
+        .sheet select, .sheet input, .sheet textarea { width: 100%; padding: 11px; border: 1.5px solid #e4dff0; border-radius: 10px; font: inherit; }
+        .sheet textarea { min-height: 70px; resize: vertical; }
+        .sheet select:focus, .sheet input:focus, .sheet textarea:focus { outline: none; border-color: #f5576c; }
+        .totals { background: #fff7f5; border-radius: 10px; padding: 12px; margin-top: 14px; font-size: 0.92em; }
+        .totals div { display: flex; justify-content: space-between; margin: 3px 0; }
+        .totals .grand { font-weight: 700; color: #f5576c; border-top: 1px solid #f3d9d3; padding-top: 6px; margin-top: 6px; }
+        .row { display: flex; gap: 10px; margin-top: 18px; }
+        .row button { flex: 1; padding: 13px; border: 0; border-radius: 10px; font: inherit; font-weight: 700; cursor: pointer; }
+        .btn-cancel { background: #f1ecf8; color: #514967; }
+        .btn-confirm { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .btn-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-error { color: #c0392b; font-size: 0.9em; margin-top: 10px; min-height: 1.2em; }
+        .note { font-size: 0.78em; color: #888; margin-top: 4px; }
+    </style>
 </head>
 <body>
     <div class="header">
@@ -32,11 +58,9 @@
 
     <div class="container">
         <p id="shopDescription" class="description"></p>
-        
+
         <div class="section-title">Our Services</div>
-        <div id="servicesList">
-            <!-- Services will appear here -->
-        </div>
+        <div id="servicesList"></div>
 
         <div class="contact-info">
             <p id="shopAddress"></p>
@@ -44,77 +68,210 @@
         </div>
     </div>
 
+    <!-- Booking dialog -->
+    <div class="overlay" id="bookingOverlay" hidden>
+        <form class="sheet" id="bookingForm" novalidate>
+            <h2>Book this service</h2>
+            <p class="summary" id="bookingSummary"></p>
+
+            <label for="pickupType">How does the gift get to the shop?</label>
+            <select id="pickupType">
+                <option value="customer_dropoff">I will drop it off at the shop</option>
+                <option value="shop_pickup">Please pick it up from me</option>
+            </select>
+            <div id="pickupAddressWrap" hidden>
+                <label for="pickupAddress">Pickup address</label>
+                <input id="pickupAddress" type="text" maxlength="300" placeholder="Building, street, area">
+            </div>
+
+            <label for="deliveryType">How do you get it back?</label>
+            <select id="deliveryType">
+                <option value="customer_pickup">I will collect it from the shop</option>
+                <option value="shop_delivery">Please deliver it to me</option>
+            </select>
+            <div id="deliveryAddressWrap" hidden>
+                <label for="deliveryAddress">Delivery address</label>
+                <input id="deliveryAddress" type="text" maxlength="300" placeholder="Building, street, area">
+            </div>
+
+            <label for="contactPhone">Contact phone</label>
+            <input id="contactPhone" type="tel" maxlength="30" placeholder="05x xxx xxxx">
+
+            <label for="scheduledTime">When do you need it? (optional)</label>
+            <input id="scheduledTime" type="datetime-local">
+
+            <label for="instructions">Notes for the shop (optional)</label>
+            <textarea id="instructions" maxlength="500" placeholder="Colours, message card, fragile items..."></textarea>
+
+            <label for="paymentMethod">Payment</label>
+            <select id="paymentMethod">
+                <option value="cash">Cash on pickup / delivery</option>
+            </select>
+            <p class="note">Online card payment is coming soon.</p>
+
+            <div class="totals">
+                <div><span>Service</span><span id="tService"></span></div>
+                <div id="tFeeRow" hidden><span>Delivery fee</span><span>Calculated by the shop</span></div>
+                <div class="grand"><span>Estimated total</span><span id="tTotal"></span></div>
+            </div>
+
+            <div class="form-error" id="formError" role="alert"></div>
+
+            <div class="row">
+                <button type="button" class="btn-cancel" id="cancelBooking">Cancel</button>
+                <button type="submit" class="btn-confirm" id="confirmBooking">Place order</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="config.js"></script>
     <script>
-        const shopId = localStorage.getItem('selectedShopId');
-        const API_URL ='https://wrapit-backend-salar.onrender.com/api';
+        // Shop id comes from the link (?id=...). Older links stored it in localStorage, so we fall back to that.
+        const params = new URLSearchParams(location.search);
+        let shopId = params.get('id');
+        if (!shopId) { try { shopId = localStorage.getItem('selectedShopId'); } catch (e) {} }
+
+        let currentShop = null;
+        let selectedService = null;
+
+        const $ = id => document.getElementById(id);
+
+        function showShopError(message) {
+            $('shopTitle').textContent = 'Shop unavailable';
+            $('servicesList').innerHTML = `<p class="error">${esc(message)}</p>`;
+        }
 
         async function fetchShopDetails() {
-            try {
-                const response = await fetch(`${API_URL}/shops/${shopId}`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    const shop = data.shop;
-                    document.getElementById('shopTitle').textContent = shop.name;
-                    document.getElementById('shopDescription').textContent = shop.description;
-                    document.getElementById('shopAddress').textContent = `📍 ${shop.address.street}, ${shop.address.city}`;
-                    document.getElementById('shopPhone').textContent = `📞 ${shop.phone}`;
+            if (!shopId) { showShopError('No shop selected. Please go back and choose a shop.'); return; }
 
-                    const servicesContainer = document.getElementById('servicesList');
-                    servicesContainer.innerHTML = shop.services.map(ser => `
-                        <div class="service-card">
-                            <div>
-                                <div style="font-weight:bold">${ser.name}</div>
-                                <div style="font-size:0.8em; color:#888">Professional wrapping</div>
-                            </div>
-                            <div style="text-align:right">
-                                <div class="price">AED ${ser.price}</div>
-                                <button class="book-btn" onclick="placeOrder('${ser.name}', ${ser.price})">Book</button>
-                            </div>
-                        </div>
-                    `).join('');
+            try {
+                const data = await api('/shops/' + encodeURIComponent(shopId));
+                currentShop = data.shop;
+
+                document.title = currentShop.name + ' - WrapIt';
+                $('shopTitle').textContent = currentShop.name;
+                $('shopDescription').textContent = currentShop.description || '';
+
+                const a = currentShop.address || {};
+                $('shopAddress').textContent = '📍 ' + [a.street, a.city].filter(Boolean).join(', ');
+                $('shopPhone').textContent = currentShop.phone ? '📞 ' + currentShop.phone : '';
+
+                const services = (currentShop.services || []).filter(s => s.isAvailable !== false);
+                if (services.length === 0) {
+                    $('servicesList').innerHTML = '<p class="error">This shop has not added any services yet.</p>';
+                    return;
                 }
+
+                $('servicesList').innerHTML = services.map(ser => `
+                    <div class="service-card">
+                        <div>
+                            <div class="service-name">${esc(ser.name)}</div>
+                            <div class="service-desc">${esc(ser.description || 'Professional wrapping')}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="price">AED ${esc(ser.price)}</div>
+                            <button type="button" class="book-btn" data-service="${esc(ser._id)}">Book</button>
+                        </div>
+                    </div>`).join('');
+
+                document.querySelectorAll('.book-btn').forEach(btn =>
+                    btn.addEventListener('click', () => openBooking(btn.dataset.service)));
             } catch (err) {
-                console.error("Error fetching shop:", err);
+                console.error('Error fetching shop:', err);
+                showShopError(err.message);
             }
         }
 
-        async function placeOrder(serviceName, price) {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert("Please login first to place an order!");
-                window.location.href = 'login.html';
+        function openBooking(serviceId) {
+            if (!getToken()) {
+                // remember where to come back to after logging in
+                window.location.href = 'login.html?next=' + encodeURIComponent('shop-detail.html?id=' + shopId);
+                return;
+            }
+            const user = getUser();
+            if (user && user.role === 'shop_owner') {
+                alert('Shop owner accounts cannot place orders. Please use a customer account.');
                 return;
             }
 
-            const orderData = {
-                shopId: shopId,
-                service: { name: serviceName, price: price },
-                pricing: { servicePrice: price, total: price },
-                pickupDetails: { type: 'customer_dropoff' },
-                payment: { method: 'cash' }
-            };
+            selectedService = (currentShop.services || []).find(s => s._id === serviceId);
+            if (!selectedService) return;
+
+            $('bookingSummary').textContent = `${selectedService.name} at ${currentShop.name}`;
+            $('tService').textContent = 'AED ' + selectedService.price;
+            $('contactPhone').value = (user && user.phone) || '';
+            $('formError').textContent = '';
+            updateBookingForm();
+            $('bookingOverlay').hidden = false;
+        }
+
+        function updateBookingForm() {
+            const pickup = $('pickupType').value === 'shop_pickup';
+            const delivery = $('deliveryType').value === 'shop_delivery';
+            $('pickupAddressWrap').hidden = !pickup;
+            $('deliveryAddressWrap').hidden = !delivery;
+            $('tFeeRow').hidden = !(pickup || delivery);
+            $('tTotal').textContent = 'AED ' + selectedService.price + (pickup || delivery ? ' + delivery' : '');
+        }
+
+        function closeBooking() { $('bookingOverlay').hidden = true; }
+
+        $('pickupType').addEventListener('change', updateBookingForm);
+        $('deliveryType').addEventListener('change', updateBookingForm);
+        $('cancelBooking').addEventListener('click', closeBooking);
+        $('bookingOverlay').addEventListener('click', e => { if (e.target === $('bookingOverlay')) closeBooking(); });
+
+        $('bookingForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            const error = $('formError');
+            error.textContent = '';
+
+            const pickupType = $('pickupType').value;
+            const deliveryType = $('deliveryType').value;
+            const phone = $('contactPhone').value.trim();
+
+            if (!phone) { error.textContent = 'Please enter a contact phone number.'; return; }
+            if (pickupType === 'shop_pickup' && !$('pickupAddress').value.trim()) { error.textContent = 'Please enter the pickup address.'; return; }
+            if (deliveryType === 'shop_delivery' && !$('deliveryAddress').value.trim()) { error.textContent = 'Please enter the delivery address.'; return; }
+
+            const when = $('scheduledTime').value ? new Date($('scheduledTime').value).toISOString() : undefined;
+
+            const button = $('confirmBooking');
+            button.disabled = true;
+            button.textContent = 'Placing order...';
 
             try {
-                const response = await fetch(`${API_URL}/orders`, {
+                await api('/orders', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(orderData)
+                    body: {
+                        shopId: currentShop._id,
+                        serviceId: selectedService._id,
+                        specialInstructions: $('instructions').value.trim(),
+                        pickupDetails: {
+                            type: pickupType,
+                            address: pickupType === 'shop_pickup' ? $('pickupAddress').value.trim() : undefined,
+                            contactPhone: phone,
+                            scheduledTime: when
+                        },
+                        deliveryDetails: {
+                            type: deliveryType,
+                            address: deliveryType === 'shop_delivery' ? $('deliveryAddress').value.trim() : undefined,
+                            contactPhone: phone
+                        },
+                        payment: { method: $('paymentMethod').value }
+                    }
                 });
-                const result = await response.json();
-                if (result.success) {
-                    alert("🎉 Order placed successfully!");
-                    window.location.href = 'index.html';
-                } else {
-                    alert("Error: " + result.message);
-                }
+                window.location.href = 'my-orders.html?placed=1';
             } catch (err) {
-                alert("Failed to connect to server.");
+                if (err.status === 401) {
+                    window.location.href = 'login.html?next=' + encodeURIComponent('shop-detail.html?id=' + shopId);
+                    return;
+                }
+                error.textContent = err.message;
+                button.disabled = false;
+                button.textContent = 'Place order';
             }
-        }
+        });
 
         fetchShopDetails();
     </script>

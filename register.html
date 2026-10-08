@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Register - WrapIt</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .language-button {
+      width: auto;
+      display: block;
+      margin: 0 0 20px auto;
+      padding: 8px 14px;
+      border: 1px solid #7b2cbf;
+      border-radius: 6px;
+      background: white;
+      color: #7b2cbf;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .language-button:hover {
+      background: #7b2cbf;
+      color: white;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      text-align: center;
+      color: #7b2cbf;
+    }
+
+    .subtitle {
+      margin-bottom: 25px;
+      text-align: center;
+      color: #666;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #7b2cbf;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      margin-top: 24px;
+      padding: 13px;
+      border: none;
+      border-radius: 6px;
+      background: #7b2cbf;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background: #5a189a;
+    }
+
+    button[type="submit"]:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    #message {
+      display: none;
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .success {
+      display: block !important;
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .error {
+      display: block !important;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .login-link {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .login-link a {
+      color: #7b2cbf;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    html[dir="rtl"] .language-button {
+      margin-right: auto;
+      margin-left: 0;
+    }
+
+    html[dir="rtl"] label,
+    html[dir="rtl"] input {
+      text-align: right;
+    }
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      margin-bottom: 18px;
+      border: 1.5px solid #ddd3ef;
+      border-radius: 10px;
+      font: inherit;
+      background: white;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <button
+      type="button"
+      id="languageButton"
+      class="language-button"
+    >
+      العربية
+    </button>
+
+    <h1 id="pageTitle">Create Account</h1>
+
+    <p class="subtitle" id="pageSubtitle">
+      Register for your WrapIt account
+    </p>
+
+    <form id="registerForm">
+      <label for="name" id="nameLabel">Full name</label>
+
+      <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Enter your full name"
+        required
+      />
+
+      <label for="email" id="emailLabel">Email address</label>
+
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        required
+      />
+
+      <label for="phone" id="phoneLabel">Phone number</label>
+
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        placeholder="Enter your phone number"
+        required
+      />
+
+      <label for="password" id="passwordLabel">Password</label>
+
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Enter a password"
+        minlength="6"
+        required
+      />
+
+      <label for="role" id="roleLabel">I want to</label>
+
+      <select id="role" name="role">
+        <option value="customer" id="roleCustomer">Wrap my gifts (customer)</option>
+        <option value="shop_owner" id="roleShop">Offer wrapping services (shop owner)</option>
+      </select>
+
+      <button type="submit" id="registerButton">
+        Register
+      </button>
+    </form>
+
+    <div id="message"></div>
+
+    <p class="login-link">
+      <span id="loginQuestion">Already have an account?</span>
+      <a href="login.html" id="loginLink">Log in</a>
+    </p>
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    const translations = {
+      en: {
+        pageTitle: "Create Account",
+        pageSubtitle: "Register for your WrapIt account",
+        nameLabel: "Full name",
+        namePlaceholder: "Enter your full name",
+        emailLabel: "Email address",
+        emailPlaceholder: "Enter your email",
+        phoneLabel: "Phone number",
+        phonePlaceholder: "Enter your phone number",
+        passwordLabel: "Password",
+        passwordPlaceholder: "Enter a password",
+        roleLabel: "I want to",
+        roleCustomer: "Wrap my gifts (customer)",
+        roleShop: "Offer wrapping services (shop owner)",
+        registerButton: "Register",
+        registeringButton: "Registering...",
+        loginQuestion: "Already have an account?",
+        loginLink: "Log in",
+        languageButton: "العربية",
+        incompleteFields: "Please complete all fields.",
+        successMessage: "Registration successful. You can now log in.",
+        defaultError: "Registration failed. Please try again."
+      },
+
+      ar: {
+        pageTitle: "إنشاء حساب",
+        pageSubtitle: "سجّل حسابك في WrapIt",
+        nameLabel: "الاسم الكامل",
+        namePlaceholder: "أدخل اسمك الكامل",
+        emailLabel: "البريد الإلكتروني",
+        emailPlaceholder: "أدخل بريدك الإلكتروني",
+        phoneLabel: "رقم الهاتف",
+        phonePlaceholder: "أدخل رقم هاتفك",
+        passwordLabel: "كلمة المرور",
+        passwordPlaceholder: "أدخل كلمة المرور",
+        roleLabel: "أريد أن",
+        roleCustomer: "أغلّف هداياي (عميل)",
+        roleShop: "أقدّم خدمات التغليف (صاحب متجر)",
+        registerButton: "تسجيل",
+        registeringButton: "جارٍ التسجيل...",
+        loginQuestion: "لديك حساب بالفعل؟",
+        loginLink: "تسجيل الدخول",
+        languageButton: "English",
+        incompleteFields: "يرجى إكمال جميع الحقول.",
+        successMessage: "تم التسجيل بنجاح. يمكنك الآن تسجيل الدخول.",
+        defaultError: "فشل التسجيل. يرجى المحاولة مرة أخرى."
+      }
+    };
+
+    const registerForm = document.getElementById("registerForm");
+    const registerButton = document.getElementById("registerButton");
+    const languageButton = document.getElementById("languageButton");
+    const message = document.getElementById("message");
+
+    let currentLanguage = localStorage.getItem("language") || "en";
+
+    function applyLanguage() {
+      const language = translations[currentLanguage];
+
+      document.documentElement.lang = currentLanguage;
+      document.documentElement.dir =
+        currentLanguage === "ar" ? "rtl" : "ltr";
+
+      document.title =
+        currentLanguage === "ar"
+          ? "تسجيل - WrapIt"
+          : "Register - WrapIt";
+
+      document.getElementById("pageTitle").textContent =
+        language.pageTitle;
+
+      document.getElementById("pageSubtitle").textContent =
+        language.pageSubtitle;
+
+      document.getElementById("nameLabel").textContent =
+        language.nameLabel;
+
+      document.getElementById("name").placeholder =
+        language.namePlaceholder;
+
+      document.getElementById("emailLabel").textContent =
+        language.emailLabel;
+
+      document.getElementById("email").placeholder =
+        language.emailPlaceholder;
+
+      document.getElementById("phoneLabel").textContent =
+        language.phoneLabel;
+
+      document.getElementById("phone").placeholder =
+        language.phonePlaceholder;
+
+      document.getElementById("passwordLabel").textContent =
+        language.passwordLabel;
+
+      document.getElementById("password").placeholder =
+        language.passwordPlaceholder;
+
+      document.getElementById("roleLabel").textContent = language.roleLabel;
+      document.getElementById("roleCustomer").textContent = language.roleCustomer;
+      document.getElementById("roleShop").textContent = language.roleShop;
+
+      document.getElementById("loginQuestion").textContent =
+        language.loginQuestion;
+
+      document.getElementById("loginLink").textContent =
+        language.loginLink;
+
+      languageButton.textContent =
+        language.languageButton;
+
+      if (!registerButton.disabled) {
+        registerButton.textContent =
+          language.registerButton;
+      }
+    }
+
+    languageButton.addEventListener("click", function () {
+      currentLanguage = currentLanguage === "en" ? "ar" : "en";
+
+      localStorage.setItem("language", currentLanguage);
+
+      applyLanguage();
+    });
+
+    registerForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const language = translations[currentLanguage];
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+
+      message.className = "";
+      message.textContent = "";
+
+      if (!name || !email || !phone || !password) {
+        message.textContent = language.incompleteFields;
+        message.className = "error";
+        return;
+      }
+
+      registerButton.disabled = true;
+      registerButton.textContent = language.registeringButton;
+
+      try {
+        const response = await fetch(
+          API_URL + "/auth/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              name: name,
+              email: email,
+              phone: phone,
+              password: password,
+              role: document.getElementById("role").value
+            })
+          }
+        );
+
+        let data = {};
+
+        try {
+          data = await response.json();
+        } catch {
+          data = {};
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            data.message ||
+            data.error ||
+            `Registration failed. Server status: ${response.status}`
+          );
+        }
+
+        message.textContent = language.successMessage;
+        message.className = "success";
+
+        registerForm.reset();
+
+        setTimeout(function () {
+          window.location.href = "login.html";
+        }, 2000);
+
+      } catch (error) {
+        console.error("Registration error:", error);
+
+        message.textContent =
+          error.message || language.defaultError;
+
+        message.className = "error";
+
+      } finally {
+        registerButton.disabled = false;
+        registerButton.textContent =
+          translations[currentLanguage].registerButton;
+      }
+    });
+
+    applyLanguage();
+  </script>
+</body>
+</html>

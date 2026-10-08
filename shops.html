@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6C63FF">
+    <meta name="theme-color" content="#7c3aed">
     <title>Browse Shops - WrapIt</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -75,11 +76,22 @@
         cursor: pointer; 
         transition: 0.3s; 
     }
-    .shop-card:hover { 
-        transform: translateY(-8px); 
-        box-shadow: 0 15px 40px rgba(245, 87
-   
-
+    .shop-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(245, 87, 108, 0.2);
+    }
+    .shop-info { padding: 20px; }
+    .shop-name { font-size: 1.2em; font-weight: 700; color: #2d3436; margin-bottom: 6px; }
+    .shop-rating, .shop-price { margin-top: 8px; color: #636e72; font-size: 0.9em; }
+    .loading { text-align: center; padding: 40px; color: #636e72; font-weight: 600; }
+    @media (max-width: 600px) {
+        body { padding: 12px; }
+        .header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; }
+        .header h1 { font-size: 1.5em; }
+        .back-btn { width: 100%; }
+        .shops-container { grid-template-columns: 1fr; }
+    }
+</style>
 </head>
 <body>
     <div class="header">
@@ -94,73 +106,76 @@
     <div id="loadingMessage" class="loading">Loading shops...</div>
     <div id="shopsContainer" class="shops-container"></div>
 
+    <script src="config.js"></script>
     <script>
         let allShops = [];
-        const API_URL ='https://wrapit-backend-salar.onrender.com/api';
+
+        const container = document.getElementById('shopsContainer');
+        const loading = document.getElementById('loadingMessage');
 
         async function loadShops() {
             try {
-                const response = await fetch(`${API_URL}/shops`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    allShops = data.shops;
-                    displayShops(allShops);
-                } else {
-                    showError('Failed to load shops');
-                }
+                const data = await api('/shops');
+                allShops = data.shops || [];
+                displayShops(allShops);
             } catch (error) {
                 console.error('Error:', error);
-                showError('Could not connect to server. Make sure backend is running!');
+                showError(error.message);
             }
         }
 
         function displayShops(shops) {
-        container.innerHTML = shops.map(shop => `
-    <div class="shop-card" onclick="goToShopDetail('${shop._id}')">
-        <div class="shop-image" style="background-image: url('https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=400&q=80'); background-size: cover;">
-        </div>
-        <div class="shop-info">
-            <div class="shop-name">${shop.name}</div>
-            <div class="shop-rating">
-                <span style="color:#fab1a0">★</span> ${shop.rating.average || '5.0'} 
-                <span style="color:#b2bec3; font-size:0.8em;">(${shop.rating.count || 0} reviews)</span>
-            </div>
-            <div class="shop-price">Starting from <span style="color:#2d3436">AED ${shop.services[0]?.price || '25'}</span></div>
-        </div>
-    </div>
-`).join('');
+            loading.style.display = 'none';
+
+            if (shops.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #636e72;">No shops found yet. Please check back soon!</p>';
+                return;
+            }
+
+            container.innerHTML = shops.map(shop => {
+                const rating = shop.rating && shop.rating.average ? Number(shop.rating.average).toFixed(1) : 'New';
+                const count = shop.rating ? shop.rating.count || 0 : 0;
+                const prices = (shop.services || []).filter(s => s.isAvailable !== false).map(s => Number(s.price));
+                const fromPrice = prices.length ? 'AED ' + Math.min(...prices) : 'See shop';
+                const city = shop.address && shop.address.city ? shop.address.city : '';
+                const image = shop.images && shop.images[0] && /^https?:\/\//i.test(shop.images[0])
+                    ? shop.images[0]
+                    : 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=400&q=80';
+
+                return `
+                <div class="shop-card" onclick="goToShopDetail('${esc(shop._id)}')">
+                    <div class="shop-image" style="height:180px; background-image: url('${esc(image)}'); background-size: cover; background-position: center;"></div>
+                    <div class="shop-info">
+                        <div class="shop-name">${esc(shop.name)}</div>
+                        <div class="shop-location" style="color:#888; font-size:0.85em; margin-top:4px;">${city ? '📍 ' + esc(city) : ''}</div>
+                        <div class="shop-rating">
+                            <span style="color:#fab1a0">★</span> ${esc(rating)}
+                            <span style="color:#b2bec3; font-size:0.8em;">(${esc(count)} reviews)</span>
+                        </div>
+                        <div class="shop-price">Starting from <span style="color:#2d3436">${esc(fromPrice)}</span></div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function filterShops() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allShops.filter(shop => 
-                shop.name.toLowerCase().includes(searchTerm) ||
-                shop.address.city.toLowerCase().includes(searchTerm)
-            );
-            displayShops(filtered);
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            displayShops(allShops.filter(shop =>
+                (shop.name || '').toLowerCase().includes(term) ||
+                ((shop.address && shop.address.city) || '').toLowerCase().includes(term)
+            ));
         }
 
         function goToShopDetail(shopId) {
-            localStorage.setItem('selectedShopId', shopId);
-            window.location.href = 'shop-detail.html';
+            window.location.href = 'shop-detail.html?id=' + encodeURIComponent(shopId);
         }
 
         function showError(message) {
-            const container = document.getElementById('shopsContainer');
-            const loading = document.getElementById('loadingMessage');
             loading.style.display = 'none';
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: red;">${message}</p>`;
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #c0392b;">${esc(message)}</p>`;
         }
 
-        // Load shops when page loads
         loadShops();
-
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js');
-        }
     </script>
 </body>
 </html>
-

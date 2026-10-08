@@ -3,23 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
     <title>My Orders - WrapIt</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);; padding: 20px; }
+        [hidden] { display: none !important; }
+        body { font-family: 'Montserrat', 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
         .header { background: linear-gradient(135deg, #f5576c 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .container { max-width: 800px; margin: 0 auto; }
+        .banner { background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-weight: 600; }
         .order-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 5px solid #f5576c; }
-        .order-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .order-id { font-size: 0.8em; color: #888; }
-        .status { padding: 4px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+        .order-id { font-size: 0.8em; color: #888; overflow-wrap: anywhere; }
+        .status { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; white-space: nowrap; background: #e9ecef; color: #495057; }
         .status-pending { background: #fff3cd; color: #856404; }
+        .status-accepted, .status-in_progress { background: #d1ecf1; color: #0c5460; }
+        .status-ready, .status-out_for_delivery { background: #e2d9f3; color: #4a2c86; }
         .status-completed { background: #d4edda; color: #155724; }
+        .status-cancelled, .status-rejected { background: #f8d7da; color: #721c24; }
         .shop-name { font-weight: bold; font-size: 1.1em; color: #333; }
         .service-name { color: #666; margin: 5px 0; }
+        .meta { color: #888; font-size: 0.85em; margin: 3px 0; }
         .total { font-weight: bold; color: #f5576c; text-align: right; }
+        .actions { margin-top: 10px; text-align: right; }
+        .cancel-btn { background: white; color: #c0392b; border: 1.5px solid #c0392b; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font: inherit; }
+        .cancel-btn:disabled { opacity: 0.5; }
         .no-orders { text-align: center; padding: 50px; color: #888; }
+        .no-orders a { color: #f5576c; font-weight: 600; }
         .back-btn { background: white; color: #f5576c; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-weight: bold; font-size: 0.9em; }
     </style>
 </head>
@@ -30,45 +43,80 @@
             <a href="index.html" class="back-btn">Home</a>
         </div>
 
-        <div id="ordersList">
-            <p style="text-align: center;">Loading your orders...</p>
-        </div>
+        <div class="banner" id="placedBanner" hidden>🎉 Order placed! The shop will confirm it shortly.</div>
+        <div id="ordersList"><p style="text-align: center;">Loading your orders...</p></div>
     </div>
 
+    <script src="config.js"></script>
     <script>
-        const API_URL = 'https://wrapit-backend-salar.onrender.com/api';
-        const token = localStorage.getItem('token');
+        const list = document.getElementById('ordersList');
 
-        async function fetchOrders() {
-            if (!token) {
-                document.getElementById('ordersList').innerHTML = '<div class="no-orders">Please <a href="login.html">Login</a> to see your orders.</div>';
+        if (new URLSearchParams(location.search).get('placed')) {
+            document.getElementById('placedBanner').hidden = false;
+        }
+
+        function money(n) { return 'AED ' + Number(n || 0); }
+
+        function render(orders) {
+            if (!orders.length) {
+                list.innerHTML = '<div class="no-orders">No orders found yet. <a href="shops.html">Time to wrap some gifts!</a></div>';
                 return;
             }
 
-            try {
-                const response = await fetch(`${API_URL}/orders/my-orders`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
+            list.innerHTML = orders.map(order => {
+                const status = order.status;
+                const label = ORDER_STATUS_LABELS[status] || status;
+                const pickup = order.pickupDetails || {};
+                const delivery = order.deliveryDetails || {};
+                const pickupText = pickup.type === 'shop_pickup' ? 'Shop picks up from: ' + (pickup.address || '') : 'You drop off at the shop';
+                const deliveryText = delivery.type === 'shop_delivery' ? 'Delivered to: ' + (delivery.address || '') : 'You collect from the shop';
+                const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : '';
 
-                if (data.success && data.orders.length > 0) {
-                    const list = document.getElementById('ordersList');
-                    list.innerHTML = data.orders.map(order => `
-                        <div class="order-card">
-                            <div class="order-header">
-                                <span class="order-id">#${order.orderNumber}</span>
-                                <span class="status status-${order.status}">${order.status}</span>
-                            </div>
-                            <div class="shop-name">${order.shop ? order.shop.name : 'Unknown Shop'}</div>
-                            <div class="service-name">${order.service.name}</div>
-                            <div class="total">AED ${order.pricing.total}</div>
-                        </div>
-                    `).join('');
-                } else {
-                    document.getElementById('ordersList').innerHTML = '<div class="no-orders">No orders found yet. Time to wrap some gifts!</div>';
-                }
+                return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span class="order-id">#${esc(order.orderNumber)}</span>
+                        <span class="status status-${esc(status)}">${esc(label)}</span>
+                    </div>
+                    <div class="shop-name">${esc(order.shop ? order.shop.name : 'Unknown Shop')}</div>
+                    <div class="service-name">${esc(order.service ? order.service.name : '')}</div>
+                    <div class="meta">📥 ${esc(pickupText)}</div>
+                    <div class="meta">📤 ${esc(deliveryText)}</div>
+                    ${date ? `<div class="meta">🕒 Placed ${esc(date)}</div>` : ''}
+                    <div class="total">${esc(money(order.pricing && order.pricing.total))}</div>
+                    ${status === 'pending' ? `<div class="actions"><button class="cancel-btn" data-id="${esc(order._id)}">Cancel order</button></div>` : ''}
+                </div>`;
+            }).join('');
+
+            list.querySelectorAll('.cancel-btn').forEach(btn => btn.addEventListener('click', () => cancelOrder(btn)));
+        }
+
+        async function cancelOrder(button) {
+            if (!confirm('Cancel this order?')) return;
+            button.disabled = true;
+            try {
+                await api('/orders/' + encodeURIComponent(button.dataset.id) + '/cancel', { method: 'PUT', body: {} });
+                fetchOrders();
             } catch (err) {
-                document.getElementById('ordersList').innerHTML = '<div class="no-orders">Error loading orders.</div>';
+                alert(err.message);
+                button.disabled = false;
+            }
+        }
+
+        async function fetchOrders() {
+            if (!getToken()) {
+                list.innerHTML = '<div class="no-orders">Please <a href="login.html?next=my-orders.html">log in</a> to see your orders.</div>';
+                return;
+            }
+            try {
+                const data = await api('/orders/my-orders');
+                render(data.orders || []);
+            } catch (err) {
+                if (err.status === 401) {
+                    list.innerHTML = '<div class="no-orders">Your session has expired. Please <a href="login.html?next=my-orders.html">log in</a> again.</div>';
+                } else {
+                    list.innerHTML = `<div class="no-orders">${esc(err.message)}</div>`;
+                }
             }
         }
 

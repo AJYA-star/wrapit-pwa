@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Orders - WrapIt</title>
+    <link rel="icon" href="icon-192.png">
 
     <style>
         * {
@@ -193,19 +194,13 @@
         </div>
     </main>
 
+    <script src="config.js"></script>
     <script>
         'use strict';
 
-        const API_URL = 'https://wrapit-backend-salar.onrender.com/api';
-
-        // Must match backend Order schema exactly
-        const ORDER_STATUSES = [
-            'Pending',
-            'Confirmed',
-            'In Progress',
-            'Completed',
-            'Cancelled'
-        ];
+        // API_URL, ORDER_STATUS_LABELS and ORDER_NEXT_STEPS come from config.js
+        // Status values must match the backend Order schema exactly
+        const ORDER_STATUSES = Object.keys(ORDER_STATUS_LABELS);
 
         const container = document.getElementById('orders-container');
         const messageBox = document.getElementById('message');
@@ -232,7 +227,7 @@
             container.setAttribute('aria-busy', String(value));
 
             container.querySelectorAll('button, select').forEach(element => {
-                element.disabled = value;
+                element.disabled = value || element.dataset.locked === '1';
             });
         }
 
@@ -387,7 +382,7 @@
                 return 'N/A';
             }
             const amount = Number(value);
-            return Number.isFinite(amount) ? '$' + amount.toFixed(2) : 'N/A';
+            return Number.isFinite(amount) ? 'AED ' + amount.toFixed(2) : 'N/A';
         }
 
         function renderOrders(orders) {
@@ -409,16 +404,17 @@
                 card.className = 'order-card';
 
                 const heading = document.createElement('h2');
-                heading.textContent = 'Order ID: ' + order._id;
+                heading.textContent = 'Order #' + (order.orderNumber || order._id);
                 card.appendChild(heading);
 
                 const customer = order.customer && typeof order.customer === 'object' ? order.customer : {};
 
                 addDetail(card, 'Customer', displayValue(customer.name, 'Unknown Customer'));
                 addDetail(card, 'Phone', customer.phone);
-                addDetail(card, 'Total Price', formatPrice(order.totalPrice));
+                addDetail(card, 'Total Price', formatPrice(order.pricing && order.pricing.total));
+                addDetail(card, 'Service', order.service && order.service.name);
 
-                const statusRow = addDetail(card, 'Current Status', displayValue(order.status, 'Unknown'));
+                const statusRow = addDetail(card, 'Current Status', ORDER_STATUS_LABELS[order.status] || displayValue(order.status, 'Unknown'));
 
                 if (order.createdAt) {
                     const date = new Date(order.createdAt);
@@ -439,28 +435,31 @@
                 select.className = 'status-select';
 
                 const currentStatus = displayValue(order.status, '');
+                const allowedNext = ORDER_NEXT_STEPS[currentStatus] || [];
 
-                if (!ORDER_STATUSES.includes(currentStatus)) {
-                    const option = document.createElement('option');
-                    option.value = currentStatus;
-                    option.textContent = currentStatus || 'Choose a status';
-                    option.disabled = true;
-                    option.selected = true;
-                    select.appendChild(option);
-                }
-
-                ORDER_STATUSES.forEach(status => {
+                // current status first (selected), then only the steps the backend will accept
+                [currentStatus, ...allowedNext].forEach(status => {
                     const option = document.createElement('option');
                     option.value = status;
-                    option.textContent = status;
+                    option.textContent = (ORDER_STATUS_LABELS[status] || status) + (status === currentStatus ? ' (current)' : '');
                     option.selected = status === currentStatus;
                     select.appendChild(option);
                 });
+
+                if (allowedNext.length === 0) {
+                    select.disabled = true;
+                    select.dataset.locked = '1';
+                }
 
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'btn-update';
                 button.textContent = 'Update';
+
+                if (allowedNext.length === 0) {
+                    button.disabled = true;
+                    button.dataset.locked = '1';
+                }
 
                 button.addEventListener('click', () => {
                     updateStatus(order, select, button, statusRow);
@@ -510,7 +509,7 @@
                 return;
             }
 
-            if (newStatus === 'Cancelled' && !window.confirm('Cancel this order?')) {
+            if ((newStatus === 'cancelled' || newStatus === 'rejected') && !window.confirm('Are you sure? This cannot be undone.')) {
                 return;
             }
 
@@ -523,13 +522,11 @@
                     body: JSON.stringify({ status: newStatus })
                 });
 
-                order.status = newStatus;
-
-                const strong = document.createElement('strong');
-                strong.textContent = 'Current Status: ';
-                statusRow.replaceChildren(strong, document.createTextNode(newStatus));
-
                 showMessage('Order status updated successfully.', 'success');
+                busy = false;
+                await fetchShopOrders();
+                showMessage('Order status updated successfully.', 'success');
+                return;
             } catch (error) {
                 handleError(error);
             } finally {

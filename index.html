@@ -1,131 +1,284 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6C63FF">
-    <title>WrapIt - Gift Wrapping Marketplace</title>
+    <meta name="theme-color" content="#7c3aed">
+    <title>WrapIt | Gift Wrapping Marketplace</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@       300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-        font-family: 'Montserrat', sans-serif;
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .container {
-        background: white;
-        border-radius: 30px;
-        padding: 60px 40px;
-        text-align: center;
-        box-shadow: 0 25px 50px rgba(252, 182, 159, 0.3);
-        max-width: 450px;
-        width: 90%;
-    }
-       h1 {
-        font-weight: 700;
-        color: #d4af37;
-        font-size: 3.5em;
-        margin-bottom: 15px;
-        letter-spacing: -2px;
-        text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-    }
-    p { 
-        color: #e5e5e5; 
-        margin-bottom: 40px; 
-        font-weight: 300; 
-        font-size: 1.1em;
-        line-height: 1.6; 
-    }
-    .btn {
-        width: 100%;
-        padding: 18px;
-        background: linear-gradient(135deg, #d4af37 0%, #c5a028 100%);
-        color: #1a1a2e;
-        border: none;
-        border-radius: 15px;
-        font-size: 1.05em;
-        font-weight: 700;
-        cursor: pointer;
-        margin-bottom: 15px;
-        transition: 0.3s;
-        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    .btn:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
-        background: #d4af37;
-    }
-    .btn-outline {
-        background: transparent;
-        color: #d4af37;
-        border: 2px solid #d4af37;
-        box-shadow: none;
-    }
-    .btn-outline:hover { 
-        background: #d4af37; 
-        color: #1a1a2e; 
-    }
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --secondary: #ec4899;
+            --dark: #21163e;
+            --text: #514967;
+            --muted: #817891;
+            --cream: #fffaf5;
+            --white: #ffffff;
+        }
 
-<body>
-    <div class="overlay"></div>
-    <div class="container">
-        <h1>WrapIt.</h1>
-        <p>Elevate your gifting experience with expert artisans near you.</p>
-        <button class="btn" onclick="window.location.href='shops.html'">Explore Shops</button>
-        <button class="btn btn-outline" onclick="window.location.href='my-orders.html'">Track Order</button>
-        <button class="btn btn-outline" style="border:none; font-size:0.8em;
-        <button class="btn" style="background: #27ae60; margin-top: 20px;" onclick="window.location.href='shop-		owner-dashboard.html'">🏪 Shop Owner Login</button>
-" onclick="window.location.href='login.html'">Sign In</button>
-    </div>
-</body>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 90% 5%, #f5d8ef, transparent 28%),
+                radial-gradient(circle at 5% 90%, #e6dcff, transparent 30%),
+                var(--cream);
+            font-family: "DM Sans", sans-serif;
+        }
+        body.arabic { font-family: "Noto Kufi Arabic", sans-serif; }
+
+        a { color: inherit; text-decoration: none; }
+        [hidden] { display: none !important; }
+
+        .page { width: min(1180px, calc(100% - 40px)); margin: auto; }
+
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 25px 0; gap: 12px; }
+
+        .logo { display: flex; align-items: center; gap: 10px; color: var(--dark); font-size: 1.4rem; font-weight: 700; }
+        .logo-mark {
+            display: grid; width: 42px; height: 42px; place-items: center;
+            border-radius: 14px; color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+        .nav-links a:hover, .nav-links button.link:hover { color: var(--primary); }
+        .nav-links button.link { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+
+        .language-button {
+            padding: 9px 14px; border: 1px solid #dfd2f3; border-radius: 9px;
+            color: var(--primary); background: white; cursor: pointer; font: inherit;
+        }
+
+        .hero {
+            display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+            gap: 70px; min-height: 570px; padding: 55px 0 75px;
+        }
+
+        .eyebrow {
+            display: inline-block; margin-bottom: 20px; padding: 8px 13px; border-radius: 999px;
+            color: #5b21b6; background: #f1e8ff; font-size: 0.78rem; font-weight: 700;
+        }
+
+        h1 {
+            color: var(--dark); font-family: "Playfair Display", serif;
+            font-size: clamp(3.2rem, 7vw, 5.5rem); line-height: 1.05; letter-spacing: -2px;
+        }
+        body.arabic h1 {
+            font-family: "Noto Kufi Arabic", sans-serif;
+            font-size: clamp(2.4rem, 6vw, 4.3rem); line-height: 1.35; letter-spacing: 0;
+        }
+        h1 span { color: var(--primary); }
+
+        .hero-text { max-width: 520px; margin: 24px 0 30px; color: var(--muted); font-size: 1.05rem; line-height: 1.8; }
+
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+        .button {
+            display: inline-block; padding: 15px 21px; border: 0; border-radius: 12px;
+            font: inherit; font-weight: 700; cursor: pointer; transition: 0.25s;
+        }
+        .button-primary { color: white; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 12px 25px #7c3aed3d; }
+        .button-light { color: var(--dark); background: white; box-shadow: 0 5px 20px #3d246115; }
+        .button-primary:hover, .button-light:hover { transform: translateY(-3px); }
+
+        .hero-art {
+            position: relative; min-height: 405px; overflow: hidden; border-radius: 30px;
+            background: linear-gradient(145deg, #7c3aed, #ec4899); box-shadow: 0 25px 65px #6c3f8c2b;
+        }
+        .gift-box {
+            position: absolute; width: 190px; height: 150px; top: 125px; left: 50%;
+            border-radius: 12px; background: #f6ca70; box-shadow: 0 25px 25px #32144b4d;
+            transform: translateX(-50%) rotate(-7deg);
+        }
+        .gift-box::before { position: absolute; width: 100%; height: 28px; top: 52px; background: #e85b9e; content: ""; }
+        .gift-box::after { position: absolute; width: 28px; height: 100%; left: 81px; background: #e85b9e; content: ""; }
+
+        .art-label {
+            position: absolute; right: 22px; bottom: 22px; left: 22px; padding: 16px;
+            border: 1px solid #ffffff55; border-radius: 14px; color: white; background: #ffffff25;
+        }
+        .art-label strong, .art-label small { display: block; }
+        .art-label small { margin-top: 5px; opacity: 0.85; }
+
+        .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding-bottom: 60px; }
+        .benefit { padding: 24px; border: 1px solid #eee7f6; border-radius: 18px; background: #ffffffbb; }
+        .benefit-icon { margin-bottom: 13px; font-size: 1.7rem; }
+        .benefit h3 { margin-bottom: 8px; color: var(--dark); font-size: 1rem; }
+        .benefit p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+        @media (max-width: 800px) {
+            .hero { grid-template-columns: 1fr; gap: 40px; }
+            .benefits { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 550px) {
+            .page { width: calc(100% - 28px); }
+            .nav-links a:not(.language-button) { display: none; }
+            .hero { padding-top: 30px; }
+            .actions { flex-direction: column; }
+            .button { width: 100%; text-align: center; }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>🎁 WrapIt</h1>
-        <p>Find the perfect gift wrapping service near you</p>
-        <button class="btn" onclick="window.location.href='shops.html'">Browse Shops</button>
-        <button class="btn btn-outline" onclick="window.location.href='login.html'">Login</button>
-        <button class="btn btn-outline" onclick="window.location.href='my-orders.html'">My Orders</button>
-        <button class="btn install-btn" id="installBtn">📱 Install App</button>
-        <p class="features">✨ Discover local gift wrapping shops<br>💰 Compare prices & services<br>📅 Book appointments instantly</p>
+    <div class="page">
+        <header class="navbar">
+            <a href="index.html" class="logo">
+                <span class="logo-mark">🎁</span>
+                <span>WrapIt</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="shops.html" data-en="Browse Shops" data-ar="تصفح المتاجر">Browse Shops</a>
+                <a href="my-orders.html" data-en="My Orders" data-ar="طلباتي">My Orders</a>
+                <a href="shop-owner-dashboard.html" id="dashboardLink" hidden data-en="Shop Dashboard" data-ar="لوحة المتجر">Shop Dashboard</a>
+                <a href="login.html" id="signInLink" data-en="Sign In" data-ar="تسجيل الدخول">Sign In</a>
+                <button type="button" class="link" id="signOutButton" hidden data-en="Sign Out" data-ar="تسجيل الخروج">Sign Out</button>
+
+                <button class="language-button" id="languageButton" type="button">العربية</button>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div>
+                    <div class="eyebrow" data-en="✨ Thoughtful gifting made easy" data-ar="✨ الهدايا الجميلة أصبحت أسهل">
+                        ✨ Thoughtful gifting made easy
+                    </div>
+
+                    <h1>
+                        <span data-en="Make every gift" data-ar="اجعل كل هدية">Make every gift</span>
+                        <br>
+                        <span data-en="beautiful." data-ar="أكثر جمالاً.">beautiful.</span>
+                    </h1>
+
+                    <p class="hero-text"
+                       data-en="Discover trusted local gift-wrapping professionals, compare services, and make your presents unforgettable."
+                       data-ar="اكتشف محترفي تغليف الهدايا الموثوقين بالقرب منك، وقارن بين الخدمات، واجعل هداياك لا تُنسى.">
+                        Discover trusted local gift-wrapping professionals, compare services, and make your presents unforgettable.
+                    </p>
+
+                    <div class="actions">
+                        <a href="shops.html" class="button button-primary"
+                           data-en="Explore Gift Wrappers →" data-ar="استكشف خدمات التغليف ←">
+                            Explore Gift Wrappers →
+                        </a>
+
+                        <a href="register.html" class="button button-light" id="registerCta"
+                           data-en="Create Free Account" data-ar="إنشاء حساب مجاني">
+                            Create Free Account
+                        </a>
+
+                        <button type="button" class="button button-light" id="installBtn" hidden
+                                data-en="📱 Install App" data-ar="📱 تثبيت التطبيق">
+                            📱 Install App
+                        </button>
+                    </div>
+                </div>
+
+                <div class="hero-art">
+                    <div class="gift-box"></div>
+
+                    <div class="art-label">
+                        <strong data-en="Perfectly wrapped, every time" data-ar="تغليف مثالي في كل مرة">
+                            Perfectly wrapped, every time
+                        </strong>
+                        <small data-en="Find your ideal wrapping service nearby"
+                               data-ar="اعثر على خدمة التغليف المناسبة بالقرب منك">
+                            Find your ideal wrapping service nearby
+                        </small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="benefits">
+                <article class="benefit">
+                    <div class="benefit-icon">📍</div>
+                    <h3 data-en="Local professionals" data-ar="محترفون محليون">Local professionals</h3>
+                    <p data-en="Connect with talented gift wrappers and creative shops near you."
+                       data-ar="تواصل مع خبراء تغليف ومتاجر إبداعية بالقرب منك.">
+                        Connect with talented gift wrappers and creative shops near you.
+                    </p>
+                </article>
+
+                <article class="benefit">
+                    <div class="benefit-icon">💎</div>
+                    <h3 data-en="Compare with confidence" data-ar="قارن بثقة">Compare with confidence</h3>
+                    <p data-en="Explore prices, services, ratings, and styles before booking."
+                       data-ar="اطّلع على الأسعار والخدمات والتقييمات قبل الحجز.">
+                        Explore prices, services, ratings, and styles before booking.
+                    </p>
+                </article>
+
+                <article class="benefit">
+                    <div class="benefit-icon">⚡</div>
+                    <h3 data-en="Simple booking" data-ar="حجز سهل">Simple booking</h3>
+                    <p data-en="Arrange your wrapping service quickly with a smooth experience."
+                       data-ar="احجز خدمة التغليف بسرعة وبكل سهولة.">
+                        Arrange your wrapping service quickly with a smooth experience.
+                    </p>
+                </article>
+            </section>
+        </main>
     </div>
 
+    <script src="config.js"></script>
     <script>
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
+        const languageButton = document.getElementById("languageButton");
+        let currentLanguage = "en";
+        try { currentLanguage = localStorage.getItem("language") || "en"; } catch (e) {}
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response: ${outcome}`);
-                deferredPrompt = null;
-                installBtn.style.display = 'none';
-            }
-        });
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.log('Service Worker error:', err));
+        function applyLanguage() {
+            document.documentElement.lang = currentLanguage;
+            document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+            document.body.classList.toggle("arabic", currentLanguage === "ar");
+            document.querySelectorAll("[data-en]").forEach(el => { el.textContent = el.dataset[currentLanguage]; });
+            languageButton.textContent = currentLanguage === "en" ? "العربية" : "English";
         }
+
+        languageButton.addEventListener("click", () => {
+            currentLanguage = currentLanguage === "en" ? "ar" : "en";
+            try { localStorage.setItem("language", currentLanguage); } catch (e) {}
+            applyLanguage();
+        });
+
+        // Show Sign In or Sign Out (and the dashboard link for shop owners)
+        (function updateNav() {
+            const user = getUser();
+            const loggedIn = !!getToken();
+            document.getElementById("signInLink").hidden = loggedIn;
+            document.getElementById("signOutButton").hidden = !loggedIn;
+            document.getElementById("registerCta").hidden = loggedIn;
+            document.getElementById("dashboardLink").hidden = !(loggedIn && user && (user.role === "shop_owner" || user.role === "admin"));
+        })();
+        document.getElementById("signOutButton").addEventListener("click", logout);
+
+        // "Install app" button (shown only when the browser says the app can be installed)
+        let deferredPrompt = null;
+        const installBtn = document.getElementById("installBtn");
+        window.addEventListener("beforeinstallprompt", event => {
+            event.preventDefault();
+            deferredPrompt = event;
+            installBtn.hidden = false;
+        });
+        installBtn.addEventListener("click", async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            installBtn.hidden = true;
+        });
+
+        applyLanguage();
     </script>
 </body>
 </html>
