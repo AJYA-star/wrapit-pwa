@@ -3,115 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#7c3aed">
-    <title>Browse Shops - WrapIt</title>
+    <meta name="theme-color" content="#5E1624">
+    <title>Browse Shops - Hadiya</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Caveat:wght@500;700&family=Nunito+Sans:wght@400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Italiana&family=Gulzar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
 
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-        font-family: 'Montserrat', sans-serif; 
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        min-height: 100vh;
-        padding: 20px; 
-    }
-    .header { 
-        background: white;
-        color: #f5576c; 
-        padding: 25px; 
-        border-radius: 20px; 
-        margin-bottom: 25px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between;
-        box-shadow: 0 10px 30px rgba(245, 87, 108, 0.15);
-    }
-    .header h1 { 
-        font-size: 2em; 
-        font-weight: 700;
-    }
-    .back-btn { 
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white; 
-        border: none; 
-        padding: 12px 24px; 
-        border-radius: 12px; 
-        cursor: pointer; 
-        font-weight: 600;
-        box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
-        transition: 0.3s;
-    }
-    .back-btn:hover { 
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
-    }
-    .search-box { margin-bottom: 25px; }
-    .search-box input { 
-        width: 100%; 
-        padding: 16px; 
-        border: 2px solid #f5576c40; 
-        border-radius: 15px; 
-        font-size: 1em;
-        background: white;
-        box-shadow: 0 5px 20px rgba(245, 87, 108, 0.1);
-        transition: 0.3s;
-    }
-    .search-box input:focus {
-        outline: none;
-        border-color: #f5576c;
-        box-shadow: 0 5px 25px rgba(245, 87, 108, 0.2);
-    }
-    .shops-container { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-        gap: 25px; 
-    }
-    .shop-card { 
-        background: white; 
-        border-radius: 20px; 
-        overflow: hidden; 
-        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-        cursor: pointer; 
-        transition: 0.3s; 
-    }
-    .shop-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 40px rgba(245, 87, 108, 0.2);
-    }
-    .shop-info { padding: 20px; }
-    .shop-name { font-size: 1.2em; font-weight: 700; color: #2d3436; margin-bottom: 6px; }
-    .shop-rating, .shop-price { margin-top: 8px; color: #636e72; font-size: 0.9em; }
-    .loading { text-align: center; padding: 40px; color: #636e72; font-weight: 600; }
-    @media (max-width: 600px) {
-        body { padding: 12px; }
-        .header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; }
-        .header h1 { font-size: 1.5em; }
-        .back-btn { width: 100%; }
-        .shops-container { grid-template-columns: 1fr; }
-    }
-</style>
+        .search { position: relative; margin: 26px 0 8px; }
+        .search svg { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; stroke: var(--muted); }
+        .search input { padding: 17px 22px 17px 52px; border-radius: 999px; background: var(--card); }
+        .shops-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 24px; padding: 28px 0 10px; }
+        .shop-card { overflow: hidden; border-radius: 24px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); cursor: pointer; transition: transform 0.25s, box-shadow 0.25s; }
+        .shop-card:hover { transform: translateY(-6px); box-shadow: 0 18px 36px rgba(70, 40, 20, 0.2); }
+        .shop-image { height: 180px; background-size: cover; background-position: center; }
+        .shop-initial { display: grid; place-items: center; height: 180px; font-family: var(--serif); font-size: 4.2rem; font-weight: 700; border-radius: 0 0 90px 0; }
+        .shop-info { padding: 20px 22px 24px; }
+        .shop-name { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--head); line-height: 1.1; }
+        .shop-location { margin-top: 6px; color: var(--muted); font-size: 0.88rem; }
+        .shop-rating, .shop-price { margin-top: 10px; color: var(--ink-2); font-size: 0.9rem; }
+        .shop-price strong { color: var(--wine); }
+        .star { color: #B8892A; }
+        .empty-note { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--muted); font-weight: 700; }
+        .empty-note.err { color: var(--wine); }
+
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎁 Browse Shops</h1>
-        <button class="back-btn" onclick="window.location.href='index.html'">← Back</button>
+    <div class="awning"></div>
+    <div class="wrap">
+        <header class="topbar">
+            <a href="index.html" class="brand">
+                <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18"/><path d="M12 9c-1.5-3-5-3.5-5-1.5S10 9 12 9zM12 9c1.5-3 5-3.5 5-1.5S14 9 12 9z"/></svg></span>
+                <span class="brand-name">Hadiya</span>
+            </a>
+            <nav class="nav" id="siteNav"></nav>
+        </header>
+
+        <div class="page-head">
+            <div class="script">on the menu today</div>
+            <h1>Wrapping shops</h1>
+            <p>Pick a shop, compare services and book in a minute.</p>
+        </div>
+
+        <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input type="text" id="searchInput" placeholder="Search shops by name or city..." onkeyup="filterShops()" aria-label="Search shops by name or city">
+        </div>
+
+        <div id="loadingMessage" class="loading">Loading shops...</div>
+        <div id="shopsContainer" class="shops-container"></div>
     </div>
 
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search shops by name or city..." onkeyup="filterShops()">
-    </div>
-
-    <div id="loadingMessage" class="loading">Loading shops...</div>
-    <div id="shopsContainer" class="shops-container"></div>
+    <div class="trees" aria-hidden="true"></div>
+    <footer class="site-footer">
+        <div class="wrap">
+            <span class="brand-name">Hadiya</span>
+            <span>Gift wrapping, picked up and delivered back.</span>
+        </div>
+    </footer>
 
     <script src="config.js"></script>
     <script>
+        renderNav('shops.html');
         let allShops = [];
 
         const container = document.getElementById('shopsContainer');
         const loading = document.getElementById('loadingMessage');
+
+        // Soft colours for shops that have no photo yet: [background, letter colour]
+        const PALETTE = [
+            ['linear-gradient(135deg,#DCD2B0,#C4C597)', '#4F5A2C'],
+            ['linear-gradient(135deg,#E6CFB2,#D6AE8E)', '#5E1624'],
+            ['linear-gradient(135deg,#C7D3CD,#9DB4AA)', '#1F4E6B'],
+            ['linear-gradient(135deg,#EAD8A8,#DDBE76)', '#6A4B05']
+        ];
 
         async function loadShops() {
             try {
@@ -128,31 +96,35 @@
             loading.style.display = 'none';
 
             if (shops.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #636e72;">No shops found yet. Please check back soon!</p>';
+                container.innerHTML = '<p class="empty-note">No shops found yet. Please check back soon!</p>';
                 return;
             }
 
-            container.innerHTML = shops.map(shop => {
+            container.innerHTML = shops.map((shop, index) => {
                 const rating = shop.rating && shop.rating.average ? Number(shop.rating.average).toFixed(1) : 'New';
                 const count = shop.rating ? shop.rating.count || 0 : 0;
                 const prices = (shop.services || []).filter(s => s.isAvailable !== false).map(s => Number(s.price));
                 const fromPrice = prices.length ? 'AED ' + Math.min(...prices) : 'See shop';
                 const city = shop.address && shop.address.city ? shop.address.city : '';
-                const image = shop.images && shop.images[0] && /^https?:\/\//i.test(shop.images[0])
-                    ? shop.images[0]
-                    : 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=400&q=80';
+                const hasImage = shop.images && shop.images[0] && /^https?:\/\//i.test(shop.images[0]);
+                const colours = PALETTE[index % PALETTE.length];
+                const initial = String(shop.name || '?').trim().charAt(0).toUpperCase();
+
+                const picture = hasImage
+                    ? `<div class="shop-image" style="background-image: url('${esc(shop.images[0])}')"></div>`
+                    : `<div class="shop-initial" style="background:${colours[0]}; color:${colours[1]}">${esc(initial)}</div>`;
 
                 return `
                 <div class="shop-card" onclick="goToShopDetail('${esc(shop._id)}')">
-                    <div class="shop-image" style="height:180px; background-image: url('${esc(image)}'); background-size: cover; background-position: center;"></div>
+                    ${picture}
                     <div class="shop-info">
                         <div class="shop-name">${esc(shop.name)}</div>
-                        <div class="shop-location" style="color:#888; font-size:0.85em; margin-top:4px;">${city ? '📍 ' + esc(city) : ''}</div>
+                        <div class="shop-location">${city ? esc(city) : ''}</div>
                         <div class="shop-rating">
-                            <span style="color:#fab1a0">★</span> ${esc(rating)}
-                            <span style="color:#b2bec3; font-size:0.8em;">(${esc(count)} reviews)</span>
+                            <span class="star">★</span> ${esc(rating)}
+                            <span style="color:var(--muted); font-size:0.85em;">(${esc(count)} reviews)</span>
                         </div>
-                        <div class="shop-price">Starting from <span style="color:#2d3436">${esc(fromPrice)}</span></div>
+                        <div class="shop-price">Starting from <strong>${esc(fromPrice)}</strong></div>
                     </div>
                 </div>`;
             }).join('');
@@ -167,12 +139,14 @@
         }
 
         function goToShopDetail(shopId) {
+            // Also remember the id here, in case a web server drops the "?id=..." part of the link
+            try { localStorage.setItem('selectedShopId', shopId); } catch (e) {}
             window.location.href = 'shop-detail.html?id=' + encodeURIComponent(shopId);
         }
 
         function showError(message) {
             loading.style.display = 'none';
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #c0392b;">${esc(message)}</p>`;
+            container.innerHTML = `<p class="empty-note err">${esc(message)}</p>`;
         }
 
         loadShops();

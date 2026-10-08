@@ -1,5 +1,9 @@
-/* WrapIt shared setup - loaded by every page BEFORE its own script.
+/* Hadiya shared setup - loaded by every page BEFORE its own script.
    Change the live API address in ONE place: PRODUCTION_API below. */
+
+/* The app name. (Pages show it as written in their HTML; the service worker and
+   manifest.json also carry it - search for "Hadiya" if you ever rename.) */
+const BRAND = { en: 'Hadiya', ar: 'هدية' };
 const PRODUCTION_API = 'https://wrapit-backend-salar.onrender.com/api';
 const LOCAL_API = 'http://localhost:5000/api';
 
@@ -98,6 +102,35 @@ async function api(path, options = {}) {
     }
     throw error;
   }
+}
+
+/* Fills <nav id="siteNav"> with the right links for whoever is signed in.
+   Pass the file name of the current page so its link is highlighted. */
+function renderNav(current) {
+  const nav = document.getElementById('siteNav');
+  if (!nav) return;
+  const user = getUser();
+  const loggedIn = !!getToken();
+  const isOwner = loggedIn && user && (user.role === 'shop_owner' || user.role === 'admin');
+  const links = [];
+  if (isOwner) {
+    links.push(['shop-owner-dashboard.html', 'Dashboard']);
+    links.push(['shop-orders.html', 'Shop orders']);
+  } else {
+    links.push(['shops.html', 'Browse shops']);
+    links.push(['my-orders.html', 'My orders']);
+  }
+  let html = links.map(([href, text]) =>
+    '<a href="' + href + '"' + (href === current ? ' class="active"' : '') + '>' + text + '</a>').join('');
+  html += '<a href="index.html">Home</a>';
+  if (loggedIn) {
+    html += '<button type="button" class="link" id="navSignOut">Sign out</button>';
+  } else {
+    html += '<a href="login.html">Sign in</a><a href="register.html" class="cta">Create account</a>';
+  }
+  nav.innerHTML = html;
+  const out = document.getElementById('navSignOut');
+  if (out) out.addEventListener('click', logout);
 }
 
 /* Register the service worker on every page that loads this file */

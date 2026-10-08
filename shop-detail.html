@@ -3,70 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#7c3aed">
-    <title>Shop Details - WrapIt</title>
+    <meta name="theme-color" content="#5E1624">
+    <title>Shop Details - Hadiya</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Caveat:wght@500;700&family=Nunito+Sans:wght@400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Italiana&family=Gulzar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        [hidden] { display: none !important; }
-        body { font-family: 'Montserrat', 'Segoe UI', sans-serif; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; min-height: 100vh; padding-bottom: 30px; }
-        .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px 20px 50px; text-align: center; }
-        .container { max-width: 600px; margin: -30px auto 20px; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
-        .back-link { color: white; text-decoration: none; font-weight: bold; display: block; margin-bottom: 10px; text-align: left; }
-        .description { color: #666; margin-bottom: 20px; line-height: 1.6; }
-        .section-title { font-size: 1.2em; font-weight: bold; margin: 20px 0 10px; border-bottom: 2px solid #f0f0f0; padding-bottom: 5px; }
-        .service-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: 0.3s; }
-        .service-card:hover { border-color: #667eea; background: #fcfcff; }
-        .service-name { font-weight: bold; }
-        .service-desc { font-size: 0.8em; color: #888; margin-top: 3px; }
-        .price { font-weight: bold; color: #f5576c; font-size: 1.2em; }
-        .book-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 6px; }
-        .book-btn:hover { background: #764ba2; }
-        .contact-info { font-size: 0.9em; color: #888; margin-top: 20px; }
-        .error { color: #c0392b; text-align: center; padding: 30px 10px; }
+
+        .back-link { display: inline-block; margin: 10px 0 6px; color: var(--wine); font-weight: 700; }
+        .shop-hero h1 { font-size: clamp(2.6rem, 6vw, 4rem); letter-spacing: -0.5px; }
+        .description { margin: 14px 0 26px; max-width: 640px; color: var(--ink-2); font-size: 1.05rem; line-height: 1.7; }
+        .menu-card { padding: 26px 28px; }
+        .menu-card .script { display: block; font-size: 2rem; margin-bottom: 6px; }
+        .menu-row { flex-wrap: wrap; }
+        .menu-row .book-btn { margin-left: 4px; }
+        .contact-info { margin: 22px 4px 0; color: var(--muted); font-size: 0.95rem; }
+        .contact-info p { margin: 4px 0; }
+        .error { color: var(--wine); text-align: center; padding: 30px 10px; font-weight: 700; }
 
         /* booking dialog */
-        .overlay { position: fixed; inset: 0; background: rgba(33, 22, 62, 0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 10; }
-        .sheet { background: white; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 22px 20px 26px; }
-        @media (min-width: 640px) { .overlay { align-items: center; } .sheet { border-radius: 20px; } }
-        .sheet h2 { color: #f5576c; margin-bottom: 4px; }
-        .sheet .summary { color: #666; margin-bottom: 14px; font-size: 0.95em; }
-        .sheet label { display: block; font-weight: 600; font-size: 0.85em; margin: 12px 0 5px; }
-        .sheet select, .sheet input, .sheet textarea { width: 100%; padding: 11px; border: 1.5px solid #e4dff0; border-radius: 10px; font: inherit; }
-        .sheet textarea { min-height: 70px; resize: vertical; }
-        .sheet select:focus, .sheet input:focus, .sheet textarea:focus { outline: none; border-color: #f5576c; }
-        .totals { background: #fff7f5; border-radius: 10px; padding: 12px; margin-top: 14px; font-size: 0.92em; }
+        .overlay { position: fixed; inset: 0; background: rgba(51, 41, 31, 0.6); display: flex; align-items: flex-end; justify-content: center; z-index: 10; }
+        .sheet { background: var(--card); width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; border-radius: 28px 28px 0 0; padding: 26px 22px 28px; border-top: 8px solid var(--wine); }
+        @media (min-width: 640px) { .overlay { align-items: center; } .sheet { border-radius: 28px; border-top-width: 8px; } }
+        .sheet h2 { color: var(--wine); font-size: 2.1rem; margin-bottom: 4px; }
+        .sheet .summary { color: var(--ink-2); margin-bottom: 14px; }
+        .sheet label { margin: 14px 0 5px; }
+        .totals { background: var(--sand); border-radius: 14px; padding: 14px; margin-top: 16px; font-size: 0.95rem; }
         .totals div { display: flex; justify-content: space-between; margin: 3px 0; }
-        .totals .grand { font-weight: 700; color: #f5576c; border-top: 1px solid #f3d9d3; padding-top: 6px; margin-top: 6px; }
-        .row { display: flex; gap: 10px; margin-top: 18px; }
-        .row button { flex: 1; padding: 13px; border: 0; border-radius: 10px; font: inherit; font-weight: 700; cursor: pointer; }
-        .btn-cancel { background: #f1ecf8; color: #514967; }
-        .btn-confirm { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
-        .btn-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
-        .form-error { color: #c0392b; font-size: 0.9em; margin-top: 10px; min-height: 1.2em; }
-        .note { font-size: 0.78em; color: #888; margin-top: 4px; }
+        .totals .grand { font-weight: 800; color: var(--wine); border-top: 1px dashed #B09A72; padding-top: 7px; margin-top: 7px; }
+        .row { display: flex; gap: 10px; margin-top: 20px; }
+        .row button { flex: 1; }
+        .btn-cancel { background: transparent; color: var(--ink-2); border-color: var(--line); }
+        .btn-cancel:hover { background: var(--sand); color: var(--head); border-color: var(--line); }
+        .form-error { color: var(--wine); font-size: 0.92rem; font-weight: 700; margin-top: 10px; min-height: 1.2em; }
+        .note { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="shops.html" class="back-link">← Back to Shops</a>
-        <h1 id="shopTitle">Loading Shop...</h1>
-    </div>
+    <div class="awning"></div>
+    <div class="wrap">
+        <header class="topbar">
+            <a href="index.html" class="brand">
+                <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18"/><path d="M12 9c-1.5-3-5-3.5-5-1.5S10 9 12 9zM12 9c1.5-3 5-3.5 5-1.5S14 9 12 9z"/></svg></span>
+                <span class="brand-name">Hadiya</span>
+            </a>
+            <nav class="nav" id="siteNav"></nav>
+        </header>
 
-    <div class="container">
-        <p id="shopDescription" class="description"></p>
+        <a href="shops.html" class="back-link">← Back to shops</a>
+        <div class="shop-hero">
+            <h1 id="shopTitle">Loading shop...</h1>
+            <p id="shopDescription" class="description"></p>
+        </div>
 
-        <div class="section-title">Our Services</div>
-        <div id="servicesList"></div>
+        <div class="card menu-card">
+            <span class="script">Our services</span>
+            <div id="servicesList"></div>
 
-        <div class="contact-info">
-            <p id="shopAddress"></p>
-            <p id="shopPhone"></p>
+            <div class="contact-info">
+                <p id="shopAddress"></p>
+                <p id="shopPhone"></p>
+            </div>
         </div>
     </div>
+
+    <div class="trees" aria-hidden="true"></div>
+    <footer class="site-footer">
+        <div class="wrap">
+            <span class="brand-name">Hadiya</span>
+            <span>Gift wrapping, picked up and delivered back.</span>
+        </div>
+    </footer>
 
     <!-- Booking dialog -->
     <div class="overlay" id="bookingOverlay" hidden>
@@ -118,14 +128,15 @@
             <div class="form-error" id="formError" role="alert"></div>
 
             <div class="row">
-                <button type="button" class="btn-cancel" id="cancelBooking">Cancel</button>
-                <button type="submit" class="btn-confirm" id="confirmBooking">Place order</button>
+                <button type="button" class="btn btn-outline btn-cancel" id="cancelBooking">Cancel</button>
+                <button type="submit" class="btn btn-confirm" id="confirmBooking">Place order</button>
             </div>
         </form>
     </div>
 
     <script src="config.js"></script>
     <script>
+        renderNav('shop-detail.html');
         // Shop id comes from the link (?id=...). Older links stored it in localStorage, so we fall back to that.
         const params = new URLSearchParams(location.search);
         let shopId = params.get('id');
@@ -148,7 +159,7 @@
                 const data = await api('/shops/' + encodeURIComponent(shopId));
                 currentShop = data.shop;
 
-                document.title = currentShop.name + ' - WrapIt';
+                document.title = currentShop.name + ' - Hadiya';
                 $('shopTitle').textContent = currentShop.name;
                 $('shopDescription').textContent = currentShop.description || '';
 
@@ -163,15 +174,14 @@
                 }
 
                 $('servicesList').innerHTML = services.map(ser => `
-                    <div class="service-card">
+                    <div class="menu-row">
                         <div>
-                            <div class="service-name">${esc(ser.name)}</div>
-                            <div class="service-desc">${esc(ser.description || 'Professional wrapping')}</div>
+                            <div class="m-name">${esc(ser.name)}</div>
+                            <div class="m-desc">${esc(ser.description || 'Professional wrapping')}</div>
                         </div>
-                        <div style="text-align:right">
-                            <div class="price">AED ${esc(ser.price)}</div>
-                            <button type="button" class="book-btn" data-service="${esc(ser._id)}">Book</button>
-                        </div>
+                        <div class="m-dots"></div>
+                        <div class="m-price">AED ${esc(ser.price)}</div>
+                        <button type="button" class="btn btn-sm book-btn" data-service="${esc(ser._id)}">Book</button>
                     </div>`).join('');
 
                 document.querySelectorAll('.book-btn').forEach(btn =>

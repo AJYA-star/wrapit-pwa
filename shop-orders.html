@@ -3,198 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Orders - WrapIt</title>
+    <meta name="theme-color" content="#5E1624">
+    <title>Shop Orders - Hadiya</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-192.png">
-
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Caveat:wght@500;700&family=Nunito+Sans:wght@400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Italiana&family=Gulzar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
 
-        body {
-            margin: 0;
-            padding: 24px;
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            color: #222;
-        }
+        .page-actions { margin-top: 16px; }
+        .login-link { display: inline-block; margin-bottom: 20px; }
+        .order-card h2 { font-size: 1.7rem; margin-bottom: 6px; color: var(--head); overflow-wrap: anywhere; }
+        .order-card p { line-height: 1.55; color: var(--ink-2); overflow-wrap: anywhere; }
+        .empty-state { background: var(--card); border: 1px dashed var(--line); border-radius: 18px; padding: 30px; text-align: center; color: var(--muted); font-weight: 700; margin-bottom: 16px; }
+        .status-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        .status-select { width: auto; min-width: 200px; padding: 10px 14px; border-radius: 999px; }
+        .btn-update { padding: 10px 22px; border: 0; border-radius: 999px; background: var(--wine); color: var(--on-wine); font: inherit; font-weight: 700; cursor: pointer; }
+        .btn-update:hover { background: var(--wine-d); }
+        button:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
+        @media (max-width: 600px) { .status-controls { align-items: stretch; flex-direction: column; } .status-select { width: 100%; } }
 
-        main {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            margin: 0 0 8px;
-        }
-
-        .subtitle {
-            margin: 0;
-            color: #555;
-        }
-
-        button,
-        select,
-        .login-link {
-            font: inherit;
-            border-radius: 6px;
-        }
-
-        button,
-        .login-link {
-            padding: 10px 16px;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:disabled,
-        select:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .refresh-button {
-            background: #333;
-            color: white;
-        }
-
-        .message {
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-        }
-
-        .message.info {
-            background: #e8f1ff;
-            color: #174578;
-        }
-
-        .message.success {
-            background: #e4f5e9;
-            color: #185c2e;
-        }
-
-        .message.error {
-            background: #fde8e8;
-            color: #8c2020;
-        }
-
-        .login-link {
-            display: inline-block;
-            background: #333;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 20px;
-        }
-
-        [hidden] {
-            display: none !important;
-        }
-
-        .order-card,
-        .empty-state {
-            background: white;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        }
-
-        .order-card h2 {
-            margin-top: 0;
-            font-size: 18px;
-            overflow-wrap: anywhere;
-        }
-
-        .order-card p {
-            line-height: 1.5;
-            overflow-wrap: anywhere;
-        }
-
-        .status-controls {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        .status-select {
-            padding: 9px;
-            border: 1px solid #ccc;
-            background: white;
-        }
-
-        .btn-update {
-            background: #238c42;
-            color: white;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 16px;
-            }
-
-            h1 {
-                font-size: 26px;
-            }
-
-            .status-controls {
-                align-items: stretch;
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
-
 <body>
-    <main>
-        <header class="page-header">
-            <div>
-                <h1>Manage Shop Orders</h1>
-                <p class="subtitle">
-                    View customer orders and update their status.
-                </p>
-            </div>
-
-            <button
-                id="refresh-button"
-                class="refresh-button"
-                type="button"
-            >
-                Refresh orders
-            </button>
+    <div class="awning"></div>
+    <div class="wrap">
+        <header class="topbar">
+            <a href="index.html" class="brand">
+                <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18"/><path d="M12 9c-1.5-3-5-3.5-5-1.5S10 9 12 9zM12 9c1.5-3 5-3.5 5-1.5S14 9 12 9z"/></svg></span>
+                <span class="brand-name">Hadiya</span>
+            </a>
+            <nav class="nav" id="siteNav"></nav>
         </header>
 
-        <div
-            id="message"
-            class="message info"
-            role="status"
-            aria-live="polite"
-            hidden
-        ></div>
+        <main style="max-width:1000px">
+            <div class="page-head">
+                <div class="script">incoming orders</div>
+                <h1>Manage shop orders</h1>
+                <p>View customer orders and update their status.</p>
+                <div class="page-actions">
+                    <button id="refresh-button" class="btn btn-outline btn-sm refresh-button" type="button">Refresh orders</button>
+                </div>
+            </div>
 
-        <a id="login-link" class="login-link" href="login.html" hidden>
-            Go to login
-        </a>
+            <div id="message" class="message info" role="status" aria-live="polite" hidden></div>
 
-        <div id="orders-container" aria-busy="false">
-            Loading orders...
+            <a id="login-link" class="btn login-link" href="login.html" hidden>Go to login</a>
+
+            <div id="orders-container" aria-busy="false">Loading orders...</div>
+        </main>
+    </div>
+
+    <div class="trees" aria-hidden="true"></div>
+    <footer class="site-footer">
+        <div class="wrap">
+            <span class="brand-name">Hadiya</span>
+            <span>Gift wrapping, picked up and delivered back.</span>
         </div>
-    </main>
+    </footer>
 
     <script src="config.js"></script>
+    <script>renderNav('shop-orders.html');</script>
     <script>
         'use strict';
 

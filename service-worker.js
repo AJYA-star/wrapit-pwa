@@ -1,8 +1,8 @@
-/* WrapIt service worker
+/* Hadiya service worker
    - Pages & scripts: network first (so you always get the newest version), cache as offline fallback
    - API calls and other websites: never touched (always live data)
    Bump CACHE_NAME whenever you want to force everyone's cache to reset. */
-const CACHE_NAME = 'wrapit-v2';
+const CACHE_NAME = 'hadiya-v4';
 
 const PRECACHE = [
   './',
@@ -15,6 +15,8 @@ const PRECACHE = [
   'shop-owner-dashboard.html',
   'shop-orders.html',
   'config.js',
+  'theme.css',
+  'trees.svg',
   'manifest.json'
 ];
 

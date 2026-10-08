@@ -1,0 +1,190 @@
+/* Hadiya - shared look: Mediterranean cafe, burgundy on beige.
+   Every page loads this file. Change colours in ONE place: the :root block below. */
+
+:root {
+  --bg: #EBDDC3;
+  --bg-2: #E3D2B0;
+  --card: #F2E7D0;
+  --field: #F6EEDC;
+  --line: #D4C09A;
+
+  --ink: #3A2A1E;
+  --ink-2: #5A4533;
+  --muted: #7A6550;
+  --head: #4A2F1E;
+
+  --wine: #5E1624;
+  --wine-d: #47101B;
+  --wine-soft: #E4CFC4;
+  --on-wine: #F2E7D0;
+
+  --coffee: #5A3B27;
+  --sand: #E0CBA0;
+  --olive: #6B7440;
+  --lemon: #E3B93C;
+  --sea: #1F4E6B;
+  --chalk: #33291F;
+
+  --shadow: 0 10px 26px rgba(70, 40, 20, 0.12);
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Nunito Sans", "Segoe UI", sans-serif;
+  --script: "Caveat", cursive;
+  --arabic: "Noto Kufi Arabic", "Segoe UI", sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--sans);
+  line-height: 1.5;
+}
+body.arabic, body.arabic button, body.arabic input, body.arabic select, body.arabic textarea { font-family: var(--arabic); }
+body.arabic h1, body.arabic h2, body.arabic h3, body.arabic .script { font-family: var(--arabic); letter-spacing: 0; }
+
+a { color: inherit; text-decoration: none; }
+h1, h2, h3 { font-family: var(--serif); color: var(--head); font-weight: 700; line-height: 1.05; }
+
+.wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+.wrap-narrow { width: min(900px, calc(100% - 40px)); margin: 0 auto; }
+.script { font-family: var(--script); font-weight: 700; color: var(--wine); font-size: 1.7rem; }
+
+/* ---------- striped awning (top of every page) ---------- */
+.awning {
+  position: relative;
+  height: 30px;
+  background: repeating-linear-gradient(90deg, var(--wine) 0 40px, var(--sand) 40px 80px);
+}
+.awning::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 100%;
+  height: 20px;
+  background: repeating-linear-gradient(90deg, var(--wine) 0 40px, var(--sand) 40px 80px);
+  -webkit-mask: radial-gradient(circle at 20px 0, #000 19px, transparent 20.5px) 0 0 / 40px 100% repeat-x;
+          mask: radial-gradient(circle at 20px 0, #000 19px, transparent 20.5px) 0 0 / 40px 100% repeat-x;
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  padding: 34px 0 18px;
+}
+.brand { display: inline-flex; align-items: center; gap: 12px; }
+.brand-mark {
+  display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--coffee);
+}
+.brand-mark svg { width: 24px; height: 24px; stroke: var(--sand); }
+/* The name: Italiana (English) and Gulzar (Arabic). Change these two lines to change the name's fonts. */
+.brand-name { font-family: "Italiana", var(--serif); font-size: 2.5rem; font-weight: 400; line-height: 1.2; color: var(--head); }
+body.arabic .brand-name { font-family: "Gulzar", var(--arabic); font-size: 3.1rem; font-weight: 400; line-height: 1.55; letter-spacing: 0; }
+
+.nav { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; font-size: 0.95rem; font-weight: 700; color: var(--ink-2); }
+.nav a:hover, .nav button.link:hover { color: var(--wine); }
+.nav button.link { border: 0; background: none; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+.nav .active { color: var(--wine); border-bottom: 2px solid var(--wine); padding-bottom: 3px; }
+.nav .cta { padding: 11px 22px; border-radius: 999px; background: var(--wine); color: var(--on-wine); }
+.nav .cta:hover { background: var(--wine-d); color: var(--on-wine); }
+.lang-btn {
+  padding: 6px 14px; border: 1.5px solid var(--coffee); border-radius: 999px;
+  background: transparent; color: var(--coffee); font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+}
+.lang-btn:hover { background: var(--coffee); color: var(--on-wine); }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-block; padding: 13px 26px;
+  border: 2px solid var(--wine); border-radius: 999px;
+  background: var(--wine); color: var(--on-wine);
+  font: inherit; font-weight: 700; font-size: 0.95rem; text-align: center;
+  cursor: pointer; transition: transform 0.2s, background 0.2s;
+}
+.btn:hover { background: var(--wine-d); border-color: var(--wine-d); transform: translateY(-2px); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn-outline, .btn.light { background: transparent; color: var(--wine); }
+.btn-outline:hover, .btn.light:hover { background: var(--wine); color: var(--on-wine); }
+.btn-sm { padding: 9px 18px; font-size: 0.85rem; }
+.btn-block { display: block; width: 100%; }
+
+/* ---------- cards, headings ---------- */
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 22px; padding: 22px; margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.card h2 { font-size: 1.7rem; margin-bottom: 12px; color: var(--wine); }
+.page-head { padding: 22px 0 8px; }
+.page-head h1 { font-size: clamp(2.6rem, 6vw, 3.8rem); letter-spacing: -0.5px; }
+.page-head p { margin-top: 10px; color: var(--ink-2); font-size: 1.05rem; }
+
+/* ---------- forms ---------- */
+label { display: block; margin: 0 0 6px; color: var(--head); font-size: 0.85rem; font-weight: 700; }
+input, select, textarea {
+  width: 100%; padding: 13px 15px;
+  border: 1.5px solid var(--line); border-radius: 12px;
+  background: var(--field); color: var(--ink);
+  font: inherit; outline: none;
+}
+input::placeholder, textarea::placeholder { color: #9A8868; }
+input:focus, select:focus, textarea:focus { border-color: var(--wine); box-shadow: 0 0 0 4px rgba(94, 22, 36, 0.12); }
+textarea { min-height: 80px; resize: vertical; }
+
+/* ---------- notices ---------- */
+.notice, .banner, .message { padding: 13px 16px; border-radius: 14px; margin-bottom: 16px; font-weight: 700; font-size: 0.92rem; background: var(--sand); color: var(--head); }
+.notice.warn { background: #EBD28A; color: #5C4204; }
+.notice.error, .message.error, .error-text { background: #E6C3C3; color: var(--wine); }
+.notice.ok, .banner, .message.success { background: #CFD8B2; color: #2F4A1A; }
+.message.info { background: #D3DDDD; color: var(--sea); }
+
+/* ---------- status badges (both naming styles used by the pages) ---------- */
+.status, .order-status {
+  display: inline-block; padding: 5px 12px; border-radius: 999px;
+  background: var(--sand); color: var(--head);
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap;
+}
+.status-pending, .st-pending { background: #EBD28A; color: #5C4204; }
+.status-accepted, .status-in_progress, .st-accepted, .st-in_progress { background: #CFDCDD; color: var(--sea); }
+.status-ready, .status-out_for_delivery, .st-ready, .st-out_for_delivery { background: #D9DDB8; color: #3F4824; }
+.status-completed, .st-completed { background: #C4D3A8; color: #2F4A1A; }
+.status-cancelled, .status-rejected, .st-cancelled, .st-rejected { background: #E6C3C3; color: var(--wine); }
+
+/* ---------- order cards ---------- */
+.order-card {
+  background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--wine);
+  border-radius: 18px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.act { border: 0; border-radius: 999px; padding: 9px 18px; cursor: pointer; font: inherit; font-weight: 700; font-size: 0.85rem; background: var(--olive); color: var(--on-wine); }
+.act:hover { filter: brightness(0.92); }
+.act.neg { background: transparent; color: var(--wine); border: 1.5px solid var(--wine); }
+.act:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---------- menu rows (services) ---------- */
+.menu-row { display: flex; align-items: baseline; gap: 12px; padding: 18px 4px; border-bottom: 1px solid var(--line); }
+.menu-row:last-child { border-bottom: 0; }
+.menu-row .m-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--head); }
+.menu-row .m-desc { margin-top: 2px; font-size: 0.88rem; color: var(--muted); font-style: italic; }
+.menu-row .m-dots { flex: 1; min-width: 24px; border-bottom: 3px dotted #B09A72; transform: translateY(-6px); }
+.menu-row .m-price { font-family: var(--script); font-size: 1.9rem; font-weight: 700; color: var(--wine); white-space: nowrap; }
+
+/* ---------- tree line + footer ---------- */
+.trees { height: 150px; margin-top: 50px; background: url("trees.svg") repeat-x center bottom / auto 150px; }
+.site-footer { background: var(--sand); }
+.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 22px 0 34px; color: var(--muted); font-size: 0.9rem; }
+.site-footer .brand-name { font-size: 1.8rem; }
+body.arabic .site-footer .brand-name { font-size: 2.2rem; line-height: 1.5; }
+
+.loading { text-align: center; padding: 40px; color: var(--muted); font-weight: 700; }
+
+@media (max-width: 640px) {
+  .wrap, .wrap-narrow { width: calc(100% - 28px); }
+  .topbar { padding-top: 26px; }
+  .nav { gap: 14px; font-size: 0.88rem; }
+  .brand-name { font-size: 2.1rem; }
+  body.arabic .brand-name { font-size: 2.6rem; }
+}

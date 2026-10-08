@@ -3,233 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#7c3aed">
-    <title>WrapIt | Gift Wrapping Marketplace</title>
+    <meta name="theme-color" content="#5E1624">
+    <title>Hadiya | Gift Wrapping Marketplace</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
-
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Caveat:wght@500;700&family=Nunito+Sans:wght@400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Italiana&family=Gulzar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
     <style>
-        :root {
-            --primary: #7c3aed;
-            --secondary: #ec4899;
-            --dark: #21163e;
-            --text: #514967;
-            --muted: #817891;
-            --cream: #fffaf5;
-            --white: #ffffff;
+        .lights { display: block; width: 100%; height: 80px; margin-top: 6px; }
+        .hero { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; padding: 10px 0 70px; }
+        .hero-text { flex: 1 1 440px; min-width: 0; }
+        .hero h1 { margin-top: 6px; font-size: clamp(3rem, 7vw, 5rem); letter-spacing: -1px; }
+        body.arabic .hero h1 { font-size: clamp(2.3rem, 6vw, 3.6rem); line-height: 1.4; }
+        .hero p { margin-top: 22px; max-width: 480px; color: var(--ink-2); font-size: 1.1rem; line-height: 1.7; }
+        .actions { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 14px; }
+        .scene { flex: 1 1 380px; min-width: 0; display: flex; justify-content: center; }
+        .scene-frame {
+            width: 380px; max-width: 100%; padding: 12px;
+            border-radius: 200px 200px 18px 18px; background: var(--coffee);
+            box-shadow: 0 18px 40px rgba(60, 35, 15, 0.25);
         }
+        .scene-frame svg { display: block; width: 100%; height: auto; border-radius: 190px 190px 10px 10px; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            min-height: 100vh;
-            color: var(--text);
-            background:
-                radial-gradient(circle at 90% 5%, #f5d8ef, transparent 28%),
-                radial-gradient(circle at 5% 90%, #e6dcff, transparent 30%),
-                var(--cream);
-            font-family: "DM Sans", sans-serif;
+        .chalk {
+            padding: 46px 40px 52px; border-radius: 22px; border: 10px solid #7A5236;
+            background: var(--chalk); box-shadow: 0 14px 34px rgba(60, 35, 15, 0.28);
         }
-        body.arabic { font-family: "Noto Kufi Arabic", sans-serif; }
+        .chalk > .script { display: block; text-align: center; font-size: 3.2rem; color: #E9D3A8; line-height: 1.2; }
+        body.arabic .chalk > .script { font-size: 2.2rem; }
+        .chalk .rule { width: 140px; margin: 6px auto 0; border-top: 3px dotted #C9566B; }
+        .steps { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 30px; }
+        .step { flex: 1 1 220px; min-width: 0; text-align: center; }
+        .step svg { width: 56px; height: 56px; }
+        .step .script { display: block; margin-top: 4px; color: #E9D3A8; font-size: 2rem; }
+        body.arabic .step .script { font-size: 1.3rem; }
+        .step p { margin-top: 6px; color: #CDBB98; line-height: 1.6; }
 
-        a { color: inherit; text-decoration: none; }
-        [hidden] { display: none !important; }
-
-        .page { width: min(1180px, calc(100% - 40px)); margin: auto; }
-
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 25px 0; gap: 12px; }
-
-        .logo { display: flex; align-items: center; gap: 10px; color: var(--dark); font-size: 1.4rem; font-weight: 700; }
-        .logo-mark {
-            display: grid; width: 42px; height: 42px; place-items: center;
-            border-radius: 14px; color: white;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .band {
+            margin-top: 80px; padding: 60px 30px; border-radius: 200px 200px 24px 24px;
+            background: var(--wine); color: var(--on-wine); text-align: center;
         }
+        .band h2 { color: var(--on-wine); font-size: clamp(2.2rem, 5vw, 3rem); }
+        body.arabic .band h2 { line-height: 1.5; font-size: 2rem; }
+        .band p { margin: 14px auto 0; max-width: 460px; color: #E4CFC4; line-height: 1.6; }
+        .band .btn { margin-top: 26px; background: var(--sand); border-color: var(--sand); color: var(--head); }
+        .band .btn:hover { background: var(--card); border-color: var(--card); }
 
-        .nav-links { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
-        .nav-links a:hover, .nav-links button.link:hover { color: var(--primary); }
-        .nav-links button.link { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-
-        .language-button {
-            padding: 9px 14px; border: 1px solid #dfd2f3; border-radius: 9px;
-            color: var(--primary); background: white; cursor: pointer; font: inherit;
-        }
-
-        .hero {
-            display: grid; grid-template-columns: 1fr 1fr; align-items: center;
-            gap: 70px; min-height: 570px; padding: 55px 0 75px;
-        }
-
-        .eyebrow {
-            display: inline-block; margin-bottom: 20px; padding: 8px 13px; border-radius: 999px;
-            color: #5b21b6; background: #f1e8ff; font-size: 0.78rem; font-weight: 700;
-        }
-
-        h1 {
-            color: var(--dark); font-family: "Playfair Display", serif;
-            font-size: clamp(3.2rem, 7vw, 5.5rem); line-height: 1.05; letter-spacing: -2px;
-        }
-        body.arabic h1 {
-            font-family: "Noto Kufi Arabic", sans-serif;
-            font-size: clamp(2.4rem, 6vw, 4.3rem); line-height: 1.35; letter-spacing: 0;
-        }
-        h1 span { color: var(--primary); }
-
-        .hero-text { max-width: 520px; margin: 24px 0 30px; color: var(--muted); font-size: 1.05rem; line-height: 1.8; }
-
-        .actions { display: flex; flex-wrap: wrap; gap: 12px; }
-
-        .button {
-            display: inline-block; padding: 15px 21px; border: 0; border-radius: 12px;
-            font: inherit; font-weight: 700; cursor: pointer; transition: 0.25s;
-        }
-        .button-primary { color: white; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 12px 25px #7c3aed3d; }
-        .button-light { color: var(--dark); background: white; box-shadow: 0 5px 20px #3d246115; }
-        .button-primary:hover, .button-light:hover { transform: translateY(-3px); }
-
-        .hero-art {
-            position: relative; min-height: 405px; overflow: hidden; border-radius: 30px;
-            background: linear-gradient(145deg, #7c3aed, #ec4899); box-shadow: 0 25px 65px #6c3f8c2b;
-        }
-        .gift-box {
-            position: absolute; width: 190px; height: 150px; top: 125px; left: 50%;
-            border-radius: 12px; background: #f6ca70; box-shadow: 0 25px 25px #32144b4d;
-            transform: translateX(-50%) rotate(-7deg);
-        }
-        .gift-box::before { position: absolute; width: 100%; height: 28px; top: 52px; background: #e85b9e; content: ""; }
-        .gift-box::after { position: absolute; width: 28px; height: 100%; left: 81px; background: #e85b9e; content: ""; }
-
-        .art-label {
-            position: absolute; right: 22px; bottom: 22px; left: 22px; padding: 16px;
-            border: 1px solid #ffffff55; border-radius: 14px; color: white; background: #ffffff25;
-        }
-        .art-label strong, .art-label small { display: block; }
-        .art-label small { margin-top: 5px; opacity: 0.85; }
-
-        .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding-bottom: 60px; }
-        .benefit { padding: 24px; border: 1px solid #eee7f6; border-radius: 18px; background: #ffffffbb; }
-        .benefit-icon { margin-bottom: 13px; font-size: 1.7rem; }
-        .benefit h3 { margin-bottom: 8px; color: var(--dark); font-size: 1rem; }
-        .benefit p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
-
-        @media (max-width: 800px) {
-            .hero { grid-template-columns: 1fr; gap: 40px; }
-            .benefits { grid-template-columns: 1fr; }
-        }
         @media (max-width: 550px) {
-            .page { width: calc(100% - 28px); }
-            .nav-links a:not(.language-button) { display: none; }
-            .hero { padding-top: 30px; }
+            .nav a:not(.cta):not(.keep) { display: none; }
             .actions { flex-direction: column; }
-            .button { width: 100%; text-align: center; }
+            .actions .btn { width: 100%; }
+            .chalk { padding: 34px 20px 40px; }
         }
     </style>
 </head>
 
 <body>
-    <div class="page">
-        <header class="navbar">
-            <a href="index.html" class="logo">
-                <span class="logo-mark">🎁</span>
-                <span>WrapIt</span>
+    <div class="awning"></div>
+    <svg class="lights" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 6 Q150 56 300 6 T600 6 T900 6 T1200 6" fill="none" stroke="#5A3B27" stroke-width="2"/>
+        <g fill="#F2C04D">
+            <circle cx="75" cy="34" r="8"/><circle cx="150" cy="40" r="8"/><circle cx="225" cy="34" r="8"/>
+            <circle cx="375" cy="34" r="8"/><circle cx="450" cy="40" r="8"/><circle cx="525" cy="34" r="8"/>
+            <circle cx="675" cy="34" r="8"/><circle cx="750" cy="40" r="8"/><circle cx="825" cy="34" r="8"/>
+            <circle cx="975" cy="34" r="8"/><circle cx="1050" cy="40" r="8"/><circle cx="1125" cy="34" r="8"/>
+        </g>
+    </svg>
+
+    <div class="wrap">
+        <header class="topbar" style="padding-top:0">
+            <a href="index.html" class="brand">
+                <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18"/><path d="M12 9c-1.5-3-5-3.5-5-1.5S10 9 12 9zM12 9c1.5-3 5-3.5 5-1.5S14 9 12 9z"/></svg></span>
+                <span class="brand-name" data-en="Hadiya" data-ar="هدية">Hadiya</span>
             </a>
 
-            <nav class="nav-links">
+            <nav class="nav">
                 <a href="shops.html" data-en="Browse Shops" data-ar="تصفح المتاجر">Browse Shops</a>
                 <a href="my-orders.html" data-en="My Orders" data-ar="طلباتي">My Orders</a>
                 <a href="shop-owner-dashboard.html" id="dashboardLink" hidden data-en="Shop Dashboard" data-ar="لوحة المتجر">Shop Dashboard</a>
-                <a href="login.html" id="signInLink" data-en="Sign In" data-ar="تسجيل الدخول">Sign In</a>
-                <button type="button" class="link" id="signOutButton" hidden data-en="Sign Out" data-ar="تسجيل الخروج">Sign Out</button>
-
-                <button class="language-button" id="languageButton" type="button">العربية</button>
+                <button class="lang-btn keep" id="languageButton" type="button">العربية</button>
+                <a href="login.html" id="signInLink" class="cta keep" data-en="Sign In" data-ar="تسجيل الدخول">Sign In</a>
+                <button type="button" class="link keep" id="signOutButton" hidden data-en="Sign Out" data-ar="تسجيل الخروج">Sign Out</button>
             </nav>
         </header>
 
         <main>
             <section class="hero">
-                <div>
-                    <div class="eyebrow" data-en="✨ Thoughtful gifting made easy" data-ar="✨ الهدايا الجميلة أصبحت أسهل">
-                        ✨ Thoughtful gifting made easy
-                    </div>
-
-                    <h1>
-                        <span data-en="Make every gift" data-ar="اجعل كل هدية">Make every gift</span>
-                        <br>
-                        <span data-en="beautiful." data-ar="أكثر جمالاً.">beautiful.</span>
-                    </h1>
-
-                    <p class="hero-text"
-                       data-en="Discover trusted local gift-wrapping professionals, compare services, and make your presents unforgettable."
-                       data-ar="اكتشف محترفي تغليف الهدايا الموثوقين بالقرب منك، وقارن بين الخدمات، واجعل هداياك لا تُنسى.">
-                        Discover trusted local gift-wrapping professionals, compare services, and make your presents unforgettable.
+                <div class="hero-text">
+                    <div class="script" data-en="Welcome in, we're open" data-ar="أهلاً بك، نحن في الخدمة">Welcome in, we're open</div>
+                    <h1 data-en="Your gifts, served beautifully wrapped." data-ar="هداياك، تُقدَّم مغلّفة بجمال.">Your gifts, served beautifully wrapped.</h1>
+                    <p data-en="Pick your favourite studio from the menu. We collect your gift, wrap it with care, and bring it back to your door."
+                       data-ar="اختر متجر التغليف المفضل لديك. نستلم هديتك، ونغلّفها بعناية، ونعيدها إلى باب منزلك.">
+                        Pick your favourite studio from the menu. We collect your gift, wrap it with care, and bring it back to your door.
                     </p>
-
                     <div class="actions">
-                        <a href="shops.html" class="button button-primary"
-                           data-en="Explore Gift Wrappers →" data-ar="استكشف خدمات التغليف ←">
-                            Explore Gift Wrappers →
-                        </a>
-
-                        <a href="register.html" class="button button-light" id="registerCta"
-                           data-en="Create Free Account" data-ar="إنشاء حساب مجاني">
-                            Create Free Account
-                        </a>
-
-                        <button type="button" class="button button-light" id="installBtn" hidden
-                                data-en="📱 Install App" data-ar="📱 تثبيت التطبيق">
-                            📱 Install App
-                        </button>
+                        <a href="shops.html" class="btn" data-en="See the menu →" data-ar="تصفح المتاجر ←">See the menu →</a>
+                        <a href="register.html" class="btn btn-outline" id="registerCta" data-en="Create free account" data-ar="إنشاء حساب مجاني">Create free account</a>
+                        <button type="button" class="btn btn-outline" id="installBtn" hidden data-en="Install app" data-ar="تثبيت التطبيق">Install app</button>
                     </div>
                 </div>
 
-                <div class="hero-art">
-                    <div class="gift-box"></div>
-
-                    <div class="art-label">
-                        <strong data-en="Perfectly wrapped, every time" data-ar="تغليف مثالي في كل مرة">
-                            Perfectly wrapped, every time
-                        </strong>
-                        <small data-en="Find your ideal wrapping service nearby"
-                               data-ar="اعثر على خدمة التغليف المناسبة بالقرب منك">
-                            Find your ideal wrapping service nearby
-                        </small>
+                <div class="scene">
+                    <div class="scene-frame">
+<svg viewBox="0 0 356 480" width="100%" aria-hidden="true" style="display:block;border-radius:190px 190px 10px 10px;overflow:hidden">
+          <rect width="356" height="480" fill="#EAD2A0"/>
+          <!-- inside glow -->
+          <rect x="40" y="90" width="276" height="260" rx="130" fill="#F2C972" opacity=".55"/>
+          <!-- shelves with cups -->
+          <rect x="90" y="190" width="176" height="6" fill="#7A5236"/><rect x="90" y="250" width="176" height="6" fill="#7A5236"/>
+          <g fill="#5E1624"><rect x="104" y="172" width="18" height="18" rx="4"/><rect x="134" y="172" width="18" height="18" rx="4"/><rect x="204" y="172" width="18" height="18" rx="4"/></g>
+          <g fill="#6B7440"><rect x="164" y="166" width="26" height="24" rx="5"/><rect x="236" y="176" width="16" height="14" rx="3"/></g>
+          <g fill="#8A6A44"><rect x="108" y="232" width="22" height="18" rx="4"/><rect x="150" y="226" width="22" height="24" rx="4"/><rect x="196" y="232" width="22" height="18" rx="4"/><rect x="232" y="228" width="22" height="22" rx="4"/></g>
+          <!-- hanging lamp -->
+          <line x1="178" y1="40" x2="178" y2="100" stroke="#5A3B27" stroke-width="2"/><path d="M160 118 Q178 90 196 118Z" fill="#5A3B27"/><circle cx="178" cy="122" r="7" fill="#F2C04D"/>
+          <!-- wall and door frame -->
+          <path d="M0 480 V190 Q0 20 178 20 Q356 20 356 190 V480 H316 V190 Q316 62 178 62 Q40 62 40 190 V480Z" fill="#D8BE8E"/>
+          <!-- floor -->
+          <rect y="400" width="356" height="80" fill="#C9A878"/>
+          <g stroke="#B08E5E" stroke-width="2"><path d="M0 430 H356 M0 458 H356 M60 400 V480 M140 400 V480 M220 400 V480 M300 400 V480"/></g>
+          <!-- lemon tree in pot (left) -->
+          <path d="M14 480 L22 410 H64 L72 480Z" fill="#5E1624"/><rect x="12" y="402" width="62" height="12" rx="4" fill="#47101B"/>
+          <rect x="41" y="330" width="5" height="76" fill="#6B4A2C"/>
+          <circle cx="30" cy="318" r="22" fill="#6B7440"/><circle cx="58" cy="306" r="26" fill="#7F8A4C"/><circle cx="46" cy="340" r="18" fill="#8F9A5A"/>
+          <circle cx="24" cy="326" r="5" fill="#E8C13F"/><circle cx="64" cy="318" r="5" fill="#E8C13F"/><circle cx="48" cy="346" r="5" fill="#E8C13F"/>
+          <!-- olive tree (right) -->
+          <path d="M310 480 L316 420 H344 L350 480Z" fill="#8A6A44"/>
+          <rect x="327" y="350" width="5" height="70" fill="#6B4A2C"/>
+          <circle cx="318" cy="338" r="22" fill="#7F8A4C"/><circle cx="344" cy="328" r="22" fill="#6B7440"/><circle cx="330" cy="316" r="18" fill="#8F9A5A"/>
+          <!-- cafe table -->
+          <ellipse cx="178" cy="366" rx="86" ry="12" fill="#7A5236"/>
+          <rect x="174" y="368" width="8" height="82" fill="#5A3B27"/><ellipse cx="178" cy="452" rx="36" ry="6" fill="#5A3B27"/>
+          <!-- gift on table -->
+          <rect x="116" y="318" width="64" height="46" rx="4" fill="#C9A878"/><rect x="143" y="318" width="9" height="46" fill="#5E1624"/><rect x="116" y="334" width="64" height="8" fill="#5E1624"/>
+          <path d="M148 318 C136 296 112 302 122 316 C128 322 144 320 148 318Z M148 318 C160 296 184 302 174 316 C168 322 152 320 148 318Z" fill="#6B7440"/>
+          <!-- coffee cup + saucer -->
+          <ellipse cx="226" cy="362" rx="26" ry="6" fill="#5E1624"/>
+          <path d="M210 332 H244 V348 Q244 362 227 362 Q210 362 210 348Z" fill="#5E1624"/><path d="M244 338 Q258 338 258 348 Q258 357 244 356" fill="none" stroke="#5E1624" stroke-width="4"/>
+          <ellipse cx="227" cy="332" rx="17" ry="4" fill="#4A2F1E"/>
+          <path d="M218 322 q4 -10 0 -18 M230 322 q4 -10 0 -18" stroke="#8A6A44" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
                     </div>
                 </div>
             </section>
 
-            <section class="benefits">
-                <article class="benefit">
-                    <div class="benefit-icon">📍</div>
-                    <h3 data-en="Local professionals" data-ar="محترفون محليون">Local professionals</h3>
-                    <p data-en="Connect with talented gift wrappers and creative shops near you."
-                       data-ar="تواصل مع خبراء تغليف ومتاجر إبداعية بالقرب منك.">
-                        Connect with talented gift wrappers and creative shops near you.
-                    </p>
-                </article>
+            <section class="chalk">
+                <span class="script" data-en="How it works" data-ar="كيف يعمل">How it works</span>
+                <div class="rule"></div>
+                <div class="steps">
+                    <div class="step">
+                        <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="36" rx="22" ry="15" fill="#E8C13F" transform="rotate(-18 32 36)"/><ellipse cx="46" cy="16" rx="12" ry="5" fill="#8F9A5A" transform="rotate(-35 46 16)"/></svg>
+                        <span class="script" data-en="1. Pick a studio" data-ar="١. اختر متجراً">1. Pick a studio</span>
+                        <p data-en="Browse local shops, compare services and prices." data-ar="تصفح المتاجر القريبة وقارن الخدمات والأسعار.">Browse local shops, compare services and prices.</p>
+                    </div>
+                    <div class="step">
+                        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 28 H46 V44 Q46 56 30 56 Q14 56 14 44Z" fill="#8C2B3D"/><path d="M46 33 Q58 33 58 42 Q58 50 46 49" fill="none" stroke="#8C2B3D" stroke-width="4"/><path d="M22 22 q4 -8 0 -14 M32 22 q4 -8 0 -14" stroke="#CDBB98" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+                        <span class="script" data-en="2. We collect &amp; wrap" data-ar="٢. نستلم ونغلّف">2. We collect &amp; wrap</span>
+                        <p data-en="Pickup from your door, or drop it at the studio." data-ar="نستلم من بابك، أو تسلّمها بنفسك للمتجر.">Pickup from your door, or drop it at the studio.</p>
+                    </div>
+                    <div class="step">
+                        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 38 C8 20 56 20 56 38 C56 52 44 56 32 56 C20 56 8 52 8 38Z" fill="#C9A878"/><path d="M32 22 V55 M22 24 C19 36 20 48 26 54 M42 24 C45 36 44 48 38 54" stroke="#8A6A44" stroke-width="2" fill="none"/></svg>
+                        <span class="script" data-en="3. Delivered back" data-ar="٣. تعود إليك">3. Delivered back</span>
+                        <p data-en="Your gift returns wrapped and ready to give." data-ar="تعود هديتك مغلّفة وجاهزة للإهداء.">Your gift returns wrapped and ready to give.</p>
+                    </div>
+                </div>
+            </section>
 
-                <article class="benefit">
-                    <div class="benefit-icon">💎</div>
-                    <h3 data-en="Compare with confidence" data-ar="قارن بثقة">Compare with confidence</h3>
-                    <p data-en="Explore prices, services, ratings, and styles before booking."
-                       data-ar="اطّلع على الأسعار والخدمات والتقييمات قبل الحجز.">
-                        Explore prices, services, ratings, and styles before booking.
-                    </p>
-                </article>
-
-                <article class="benefit">
-                    <div class="benefit-icon">⚡</div>
-                    <h3 data-en="Simple booking" data-ar="حجز سهل">Simple booking</h3>
-                    <p data-en="Arrange your wrapping service quickly with a smooth experience."
-                       data-ar="احجز خدمة التغليف بسرعة وبكل سهولة.">
-                        Arrange your wrapping service quickly with a smooth experience.
-                    </p>
-                </article>
+            <section class="band">
+                <h2 data-en="Do you wrap gifts for a living?" data-ar="هل تغلّف الهدايا باحتراف؟">Do you wrap gifts for a living?</h2>
+                <p data-en="Open your shop on Hadiya and receive orders from customers near you." data-ar="افتح متجرك في هدية واستقبل طلبات العملاء القريبين منك.">Open your shop on Hadiya and receive orders from customers near you.</p>
+                <a href="register.html" class="btn" data-en="Register your shop" data-ar="سجّل متجرك">Register your shop</a>
             </section>
         </main>
     </div>
+
+    <div class="trees" aria-hidden="true"></div>
+    <footer class="site-footer">
+        <div class="wrap">
+            <span class="brand-name" data-en="Hadiya" data-ar="هدية">Hadiya</span>
+            <span data-en="Gift wrapping, picked up and delivered back." data-ar="تغليف الهدايا، نستلمها ونعيدها إليك.">Gift wrapping, picked up and delivered back.</span>
+        </div>
+    </footer>
 
     <script src="config.js"></script>
     <script>
@@ -243,6 +197,7 @@
             document.body.classList.toggle("arabic", currentLanguage === "ar");
             document.querySelectorAll("[data-en]").forEach(el => { el.textContent = el.dataset[currentLanguage]; });
             languageButton.textContent = currentLanguage === "en" ? "العربية" : "English";
+            document.title = currentLanguage === "ar" ? "هدية | سوق تغليف الهدايا" : "Hadiya | Gift Wrapping Marketplace";
         }
 
         languageButton.addEventListener("click", () => {
