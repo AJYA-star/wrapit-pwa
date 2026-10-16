@@ -96,6 +96,7 @@
                     <div class="meta">📥 ${esc(pickupText)}</div>
                     <div class="meta">📤 ${esc(deliveryText)}</div>
                     ${date ? `<div class="meta">🕒 Placed ${esc(date)}</div>` : ''}
+                    ${order.pricing && Number(order.pricing.deliveryFee) > 0 ? `<div class="meta">Service ${esc(money(order.pricing.servicePrice))} + delivery ${esc(money(order.pricing.deliveryFee))}</div>` : ''}
                     <div class="total">${esc(money(order.pricing && order.pricing.total))}</div>
                     ${status === 'pending' ? `<div class="actions"><button class="cancel-btn" data-id="${esc(order._id)}">Cancel order</button></div>` : ''}
                 </div>`;

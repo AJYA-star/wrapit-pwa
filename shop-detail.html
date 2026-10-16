@@ -121,7 +121,7 @@
 
             <div class="totals">
                 <div><span>Service</span><span id="tService"></span></div>
-                <div id="tFeeRow" hidden><span>Delivery fee</span><span>Calculated by the shop</span></div>
+                <div id="tFeeRow" hidden><span id="tFeeLabel">Delivery</span><span id="tFee"></span></div>
                 <div class="grand"><span>Estimated total</span><span id="tTotal"></span></div>
             </div>
 
@@ -144,6 +144,7 @@
 
         let currentShop = null;
         let selectedService = null;
+        let feePerTrip = null; // AED per trip, loaded from the server so it always matches the real price
 
         const $ = id => document.getElementById(id);
 
@@ -220,8 +221,15 @@
             const delivery = $('deliveryType').value === 'shop_delivery';
             $('pickupAddressWrap').hidden = !pickup;
             $('deliveryAddressWrap').hidden = !delivery;
-            $('tFeeRow').hidden = !(pickup || delivery);
-            $('tTotal').textContent = 'AED ' + selectedService.price + (pickup || delivery ? ' + delivery' : '');
+
+            const trips = (pickup ? 1 : 0) + (delivery ? 1 : 0);
+            const fee = feePerTrip === null ? null : trips * feePerTrip;
+            $('tFeeRow').hidden = trips === 0;
+            $('tFeeLabel').textContent = trips === 2 ? 'Delivery (pickup + return)' : 'Delivery';
+            $('tFee').textContent = fee === null ? 'Calculated by the shop' : (fee === 0 ? 'Free' : 'AED ' + fee);
+            $('tTotal').textContent = fee === null
+                ? 'AED ' + selectedService.price + (trips ? ' + delivery' : '')
+                : 'AED ' + (Number(selectedService.price) + fee);
         }
 
         function closeBooking() { $('bookingOverlay').hidden = true; }
@@ -283,6 +291,15 @@
             }
         });
 
+        async function loadFee() {
+            try {
+                const data = await api('/config');
+                const fee = Number(data.deliveryFeePerLeg);
+                if (Number.isFinite(fee) && fee >= 0) feePerTrip = fee;
+            } catch (e) { /* older server: the booking form falls back to "Calculated by the shop" */ }
+        }
+
+        loadFee();
         fetchShopDetails();
     </script>
 </body>
