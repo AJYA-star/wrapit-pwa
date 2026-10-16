@@ -266,7 +266,9 @@
                     <div class="order-top">
                         <div class="order-info">
                             <h3>#${esc(number.slice(-8))}</h3>
-                            <p><strong>Service:</strong> ${esc(order.service && order.service.name)} — AED ${esc(order.pricing && order.pricing.total)}</p>
+                            <p><strong>Service:</strong> ${esc(order.service && order.service.name)} — AED ${esc(order.pricing && order.pricing.servicePrice != null ? order.pricing.servicePrice : (order.pricing && order.pricing.total))}</p>
+                            ${order.pricing && Number(order.pricing.deliveryFee) > 0 ? `<p><strong>Delivery:</strong> AED ${esc(order.pricing.deliveryFee)}</p>` : ''}
+                            <p><strong>Total to collect:</strong> AED ${esc(order.pricing && order.pricing.total)}</p>
                             <p><strong>Customer:</strong> ${esc(customer.name || 'Unknown')} ${customer.phone ? '· ' + esc(customer.phone) : ''}</p>
                             <p><strong>Gift to shop:</strong> ${pickup.type === 'shop_pickup' ? 'Pick up from ' + esc(pickup.address) : 'Customer drops off'}</p>
                             <p><strong>Return:</strong> ${delivery.type === 'shop_delivery' ? 'Deliver to ' + esc(delivery.address) : 'Customer collects'}</p>

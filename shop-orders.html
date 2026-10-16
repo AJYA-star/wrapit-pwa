@@ -281,8 +281,12 @@
 
                 addDetail(card, 'Customer', displayValue(customer.name, 'Unknown Customer'));
                 addDetail(card, 'Phone', customer.phone);
-                addDetail(card, 'Total Price', formatPrice(order.pricing && order.pricing.total));
                 addDetail(card, 'Service', order.service && order.service.name);
+                if (order.pricing && Number(order.pricing.deliveryFee) > 0) {
+                    addDetail(card, 'Service Price', formatPrice(order.pricing.servicePrice));
+                    addDetail(card, 'Delivery Fee', formatPrice(order.pricing.deliveryFee));
+                }
+                addDetail(card, 'Total Price', formatPrice(order.pricing && order.pricing.total));
 
                 const statusRow = addDetail(card, 'Current Status', ORDER_STATUS_LABELS[order.status] || displayValue(order.status, 'Unknown'));
 
