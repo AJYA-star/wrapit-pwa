@@ -86,6 +86,20 @@
             </div>
 
             <section class="card">
+                <h2>Shop details</h2>
+                <p class="intro">This is what customers see. Change it here any time.</p>
+                <form class="grid" id="detailsForm">
+                    <div class="full"><label for="eName">Shop name</label><input id="eName" required maxlength="80"></div>
+                    <div class="full"><label for="eDesc">Description</label><textarea id="eDesc" required maxlength="500"></textarea></div>
+                    <div><label for="ePhone">Shop phone</label><input id="ePhone" type="tel" required maxlength="30"></div>
+                    <div><label for="eEmail">Shop email</label><input id="eEmail" type="email" required></div>
+                    <div><label for="eStreet">Street / area</label><input id="eStreet" required></div>
+                    <div><label for="eCity">City</label><input id="eCity" required></div>
+                    <div class="full"><button class="btn" type="submit" id="detailsBtn">Save changes</button></div>
+                </form>
+            </section>
+
+            <section class="card">
                 <h2>Your services</h2>
                 <div id="servicesList"></div>
                 <form class="grid" id="serviceForm" style="margin-top:14px;">
@@ -156,6 +170,7 @@
                 $('dashboard').hidden = false;
                 $('shopSubtitle').textContent = shop.name;
                 $('verifyNotice').hidden = shop.isVerified !== false;
+                fillDetailsForm();
                 renderServices();
                 await loadOrders();
             } catch (err) {
@@ -186,6 +201,50 @@
                     }
                 });
                 await loadShop();
+            } catch (err) { handleError(err); }
+            btn.disabled = false;
+        });
+
+        function fillDetailsForm() {
+            $('eName').value = shop.name || '';
+            $('eDesc').value = shop.description || '';
+            $('ePhone').value = shop.phone || '';
+            $('eEmail').value = shop.email || '';
+            $('eStreet').value = (shop.address && shop.address.street) || '';
+            $('eCity').value = (shop.address && shop.address.city) || '';
+        }
+
+        $('detailsForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            const btn = $('detailsBtn');
+            const phone = $('ePhone').value.trim();
+            if (phone.replace(/\D/g, '').length < 7) {
+                showMessage('Please enter a valid phone number.');
+                $('message').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            btn.disabled = true;
+            showMessage('');
+            try {
+                const data = await api('/shops/' + encodeURIComponent(shop._id), {
+                    method: 'PUT',
+                    body: {
+                        name: $('eName').value.trim(),
+                        description: $('eDesc').value.trim(),
+                        phone,
+                        email: $('eEmail').value.trim(),
+                        // keep the other address fields (country etc.) as they are
+                        address: Object.assign({}, shop.address, {
+                            street: $('eStreet').value.trim(),
+                            city: $('eCity').value.trim()
+                        })
+                    }
+                });
+                shop = data.shop;
+                $('shopSubtitle').textContent = shop.name;
+                fillDetailsForm();
+                showMessage('Saved. Your shop details are updated.', 'ok');
+                $('message').scrollIntoView({ behavior: 'smooth', block: 'center' });
             } catch (err) { handleError(err); }
             btn.disabled = false;
         });
