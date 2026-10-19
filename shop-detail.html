@@ -68,7 +68,6 @@
 
             <div class="contact-info">
                 <p id="shopAddress"></p>
-                <p id="shopPhone"></p>
             </div>
         </div>
     </div>
@@ -169,7 +168,6 @@
 
                 const a = currentShop.address || {};
                 $('shopAddress').textContent = '📍 ' + [a.street, a.city].filter(Boolean).join(', ');
-                $('shopPhone').textContent = currentShop.phone ? '📞 ' + currentShop.phone : '';
 
                 const services = (currentShop.services || []).filter(s => s.isAvailable !== false);
                 if (services.length === 0) {

@@ -19,7 +19,7 @@
         .service-name { color: var(--ink-2); margin: 4px 0 8px; font-weight: 700; }
         .meta { color: var(--muted); font-size: 0.88rem; margin: 3px 0; }
         .total { margin-top: 8px; font-family: var(--script); font-weight: 700; font-size: 1.9rem; color: var(--wine); text-align: right; }
-        .actions { margin-top: 8px; text-align: right; }
+        .actions { margin-top: 8px; text-align: right; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; align-items: center; }
         .cancel-btn { background: transparent; color: var(--wine); border: 1.5px solid var(--wine); padding: 8px 18px; border-radius: 999px; cursor: pointer; font: inherit; font-weight: 700; }
         .cancel-btn:hover { background: var(--wine); color: var(--on-wine); }
         .cancel-btn:disabled { opacity: 0.5; }
@@ -98,7 +98,10 @@
                     ${date ? `<div class="meta">🕒 Placed ${esc(date)}</div>` : ''}
                     ${order.pricing && Number(order.pricing.deliveryFee) > 0 ? `<div class="meta">Service ${esc(money(order.pricing.servicePrice))} + delivery ${esc(money(order.pricing.deliveryFee))}</div>` : ''}
                     <div class="total">${esc(money(order.pricing && order.pricing.total))}</div>
-                    ${status === 'pending' ? `<div class="actions"><button class="cancel-btn" data-id="${esc(order._id)}">Cancel order</button></div>` : ''}
+                    <div class="actions">
+                        <a class="btn btn-sm" href="chat.html?order=${encodeURIComponent(order._id)}">💬 Chat with the shop</a>
+                        ${status === 'pending' ? `<button class="cancel-btn" data-id="${esc(order._id)}">Cancel order</button>` : ''}
+                    </div>
                 </div>`;
             }).join('');
 

@@ -341,6 +341,13 @@
 
                 controls.append(label, select, button);
                 card.appendChild(controls);
+
+                const chatLink = document.createElement('a');
+                chatLink.className = 'btn btn-outline btn-sm';
+                chatLink.style.marginTop = '14px';
+                chatLink.href = 'chat.html?order=' + encodeURIComponent(order._id);
+                chatLink.textContent = '💬 Chat with customer';
+                card.appendChild(chatLink);
                 fragment.appendChild(card);
             });
 
