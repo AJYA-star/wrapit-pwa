@@ -276,9 +276,9 @@
             const deliveryType = $('deliveryType').value;
             const phone = $('contactPhone').value.trim();
 
-            if (!phone) { problem('Please enter a contact phone number.', $('contactPhone')); return; }
-            if (pickupType === 'shop_pickup' && !$('pickupAddress').value.trim()) { problem('Please enter the pickup address.', $('pickupAddress')); return; }
-            if (deliveryType === 'shop_delivery' && !$('deliveryAddress').value.trim()) { problem('Please enter the delivery address.', $('deliveryAddress')); return; }
+            if (phone.replace(/\D/g, '').length < 7) { problem('Please enter a valid contact phone number.', $('contactPhone')); return; }
+            if (pickupType === 'shop_pickup' && $('pickupAddress').value.trim().length < 8) { problem('Please enter the full pickup address (building, street, area).', $('pickupAddress')); return; }
+            if (deliveryType === 'shop_delivery' && $('deliveryAddress').value.trim().length < 8) { problem('Please enter the full delivery address (building, street, area).', $('deliveryAddress')); return; }
 
             const whenValue = $('scheduledTime').value;
             if (!whenValue) { problem('Please choose a date and time.', $('scheduledTime')); return; }
