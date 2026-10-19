@@ -38,6 +38,9 @@
         .btn-cancel { background: transparent; color: var(--ink-2); border-color: var(--line); }
         .btn-cancel:hover { background: var(--sand); color: var(--head); border-color: var(--line); }
         .form-error { color: var(--wine); font-size: 0.92rem; font-weight: 700; margin-top: 10px; min-height: 1.2em; }
+        .form-error:not(:empty) { background: #E6C3C3; padding: 10px 14px; border-radius: 12px; }
+        .field-error { margin-top: 6px; color: var(--wine); font-size: 0.88rem; font-weight: 700; }
+        .invalid { border-color: var(--wine) !important; box-shadow: 0 0 0 4px rgba(94, 22, 36, 0.18) !important; }
         .note { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
 
     </style>
@@ -249,19 +252,39 @@
             const error = $('formError');
             error.textContent = '';
 
+            document.querySelectorAll('#bookingForm .invalid').forEach(el => el.classList.remove('invalid'));
+            document.querySelectorAll('#bookingForm .field-error').forEach(el => el.remove());
+
+            // Show the message right under the field, mark the field in red and scroll to it
+            const problem = (message, field) => {
+                if (field) {
+                    field.classList.add('invalid');
+                    const note = document.createElement('div');
+                    note.className = 'field-error';
+                    note.setAttribute('role', 'alert');
+                    note.textContent = message;
+                    field.insertAdjacentElement('afterend', note);
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    field.focus({ preventScroll: true });
+                } else {
+                    error.textContent = message;
+                    error.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            };
+
             const pickupType = $('pickupType').value;
             const deliveryType = $('deliveryType').value;
             const phone = $('contactPhone').value.trim();
 
-            if (!phone) { error.textContent = 'Please enter a contact phone number.'; return; }
-            if (pickupType === 'shop_pickup' && !$('pickupAddress').value.trim()) { error.textContent = 'Please enter the pickup address.'; return; }
-            if (deliveryType === 'shop_delivery' && !$('deliveryAddress').value.trim()) { error.textContent = 'Please enter the delivery address.'; return; }
+            if (!phone) { problem('Please enter a contact phone number.', $('contactPhone')); return; }
+            if (pickupType === 'shop_pickup' && !$('pickupAddress').value.trim()) { problem('Please enter the pickup address.', $('pickupAddress')); return; }
+            if (deliveryType === 'shop_delivery' && !$('deliveryAddress').value.trim()) { problem('Please enter the delivery address.', $('deliveryAddress')); return; }
 
             const whenValue = $('scheduledTime').value;
-            if (!whenValue) { error.textContent = 'Please choose a date and time.'; return; }
+            if (!whenValue) { problem('Please choose a date and time.', $('scheduledTime')); return; }
             const whenDate = new Date(whenValue);
             if (Number.isNaN(whenDate.getTime()) || whenDate.getTime() < Date.now()) {
-                error.textContent = 'Please choose a date and time in the future.';
+                problem('Please choose a date and time in the future.', $('scheduledTime'));
                 return;
             }
             const when = whenDate.toISOString();
@@ -298,6 +321,7 @@
                     return;
                 }
                 error.textContent = err.message;
+                error.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 button.disabled = false;
                 button.textContent = 'Place order';
             }
