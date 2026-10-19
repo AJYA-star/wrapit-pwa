@@ -107,8 +107,8 @@
             <label for="contactPhone">Contact phone</label>
             <input id="contactPhone" type="tel" maxlength="30" placeholder="05x xxx xxxx">
 
-            <label for="scheduledTime">When do you need it? (optional)</label>
-            <input id="scheduledTime" type="datetime-local">
+            <label for="scheduledTime">Date and time *</label>
+            <input id="scheduledTime" type="datetime-local" required>
 
             <label for="instructions">Notes for the shop (optional)</label>
             <textarea id="instructions" maxlength="500" placeholder="Colours, message card, fragile items..."></textarea>
@@ -212,6 +212,11 @@
             $('tService').textContent = 'AED ' + selectedService.price;
             $('contactPhone').value = (user && user.phone) || '';
             $('formError').textContent = '';
+            // Earliest choosable time = now (in the customer's local time)
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            $('scheduledTime').min = now.toISOString().slice(0, 16);
+            $('scheduledTime').value = '';
             updateBookingForm();
             $('bookingOverlay').hidden = false;
         }
@@ -252,7 +257,14 @@
             if (pickupType === 'shop_pickup' && !$('pickupAddress').value.trim()) { error.textContent = 'Please enter the pickup address.'; return; }
             if (deliveryType === 'shop_delivery' && !$('deliveryAddress').value.trim()) { error.textContent = 'Please enter the delivery address.'; return; }
 
-            const when = $('scheduledTime').value ? new Date($('scheduledTime').value).toISOString() : undefined;
+            const whenValue = $('scheduledTime').value;
+            if (!whenValue) { error.textContent = 'Please choose a date and time.'; return; }
+            const whenDate = new Date(whenValue);
+            if (Number.isNaN(whenDate.getTime()) || whenDate.getTime() < Date.now()) {
+                error.textContent = 'Please choose a date and time in the future.';
+                return;
+            }
+            const when = whenDate.toISOString();
 
             const button = $('confirmBooking');
             button.disabled = true;
